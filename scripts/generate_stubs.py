@@ -9,7 +9,7 @@ TSP_WORKERS = [REPO_DIR / "workers" / "tkr_sqcsub" / "schema.tsp"]
 
 def generate_tsp_stubs(tsp_path: Path):
     namespace = Namespace.from_spec_file(tsp_path)
-    worker = Worker("tmp")
+    worker = Worker("your_worker_name")
     worker.namespace = namespace
     worker.write_stubs(tsp_path.parent / "stubs.py")
 
