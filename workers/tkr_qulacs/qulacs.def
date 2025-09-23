@@ -1,0 +1,40 @@
+Bootstrap: docker
+From: python:3.12.11-slim-trixie
+Stage: spython-base
+
+%files
+check_mpi.py .
+%post
+
+apt-get update \
+&& apt-get install -y --no-install-recommends \
+mpich \
+build-essential \
+cmake \
+libboost-all-dev \
+git
+
+
+git clone -b release-v0.6.12 https://github.com/qulacs/qulacs.git
+mkdir -p qulacs
+cd qulacs
+
+
+pip install pytest numpy mpi4py openfermion
+
+C_COMPILER=mpicc CXX_COMPILER=mpic++ USE_MPI=Yes pip install .
+
+
+USE_TEST=Yes ./script/build_mpicc.sh
+cd build && make test
+cd build && make pythontest
+
+python check_mpi.py
+chmod +x check_mpi.py
+
+%runscript
+cd qulacs
+exec /bin/bash python check_mpi.py "$@"
+%startscript
+cd qulacs
+exec /bin/bash python check_mpi.py "$@"

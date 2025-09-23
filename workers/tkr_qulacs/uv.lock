@@ -354,6 +354,15 @@ wheels = [
 ]
 
 [[package]]
+name = "spython"
+version = "0.3.14"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/f0/55/ecc3cfb2168177440d42fdea999a3c64a92e97e1e3fde9884a19408aab4c/spython-0.3.14.tar.gz", hash = "sha256:8ad53ef034395cfa2d8a710cc1c3638e4475e5bbc6a2842d317db8013c2e4188", size = 69164 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/f9/38/8b6fc7a8153cb49eb3a9a13acfa9eeb6cc476e37888781e593e6f02ac05e/spython-0.3.14-py3-none-any.whl", hash = "sha256:72968583e498bc2a51f9acd0ed6bc0d7d1f7ccd491feaba5e2f7d944bc51da3a", size = 109720 },
+]
+
+[[package]]
 name = "sympy"
 version = "1.14.0"
 source = { registry = "https://pypi.org/simple" }
@@ -386,11 +395,19 @@ dependencies = [
     { name = "tierkreis" },
 ]
 
+[package.dev-dependencies]
+dev = [
+    { name = "spython" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "pytket-qulacs", specifier = ">=0.41.0" },
     { name = "tierkreis", specifier = ">=2.0.2" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "spython", specifier = ">=0.3.14" }]
 
 [[package]]
 name = "typing-extensions"

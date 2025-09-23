@@ -6,3 +6,8 @@ dependencies = [
     "pytket-qulacs>=0.41.0",
     "tierkreis>=2.0.2",
 ]
+
+[dependency-groups]
+dev = [
+    "spython>=0.3.14",
+]

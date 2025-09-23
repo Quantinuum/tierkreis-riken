@@ -17,4 +17,10 @@ qulacs-worker:
 	docker push ghcr.io/quantinuum-dev/fugaku/qulacs-worker:latest
 
 pull:
+	singularity registry login --username mwpb docker://ghcr.io
+	export SINGULARITY_TMPDIR=/tmp/tierkreis-singularity/
+	mkdir -p /tmp/tierkreis-singularity
 	singularity pull --force --arch arm64 docker://ghcr.io/quantinuum-dev/fugaku/qulacs-worker
+
+run:
+	singularity run docker://ghcr.io/quantinuum-dev/fugaku/qulacs-worker

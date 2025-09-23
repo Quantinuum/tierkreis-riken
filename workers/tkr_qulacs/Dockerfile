@@ -1,11 +1,12 @@
-FROM python:3.12.11-trixie
+FROM python:3.12.11-slim-trixie
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
     mpich \
     build-essential \
     cmake \
-    libboost-all-dev
+    libboost-all-dev \
+    git
 
 
 RUN git clone -b release-v0.6.12 https://github.com/qulacs/qulacs.git
