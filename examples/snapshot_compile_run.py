@@ -9,7 +9,7 @@ from tierkreis.pytket_worker import get_backend_info, compile_using_info
 from tierkreis.executor import UvExecutor, MultipleExecutor, ShellExecutor
 from tierkreis.storage import FileStorage
 
-from workers.tkr_sqcsub_convert.stubs import prepare_submission
+from workers.tkr_sqcsub_convert.stubs import SubmissionData, prepare_submission
 from workers.tkr_sqcsub.stubs import submit
 
 IBMQConfig = OpaqueType["quantinuum_schemas.models.backend_config.IBMQConfig"]
@@ -25,7 +25,7 @@ class SnapshotCompileRunInputs(NamedTuple):
     circuit: TKR[Circuit]
 
 
-g = GraphBuilder(SnapshotCompileRunInputs, TKR[bytes])
+g = GraphBuilder(SnapshotCompileRunInputs, SubmissionData)
 info = g.task(get_backend_info(g.inputs.config))
 compiled_circuit = g.task(
     compile_using_info(
@@ -33,12 +33,12 @@ compiled_circuit = g.task(
     )
 )
 data = g.task(prepare_submission(g.inputs.config, compiled_circuit))
-res = g.task(
-    submit(
-        g.const(2), g.const(100), data.qasm, g.const("qasm"), g.const("raw"), data.qpu
-    )
-)
-g.outputs(res)
+# res = g.task(
+#     submit(
+#         g.const(2), g.const(100), data.qasm, g.const("qasm"), g.const("raw"), data.qpu
+#     )
+# )
+g.outputs(data)
 
 if __name__ == "__main__":
     import quantinuum_schemas as qs
