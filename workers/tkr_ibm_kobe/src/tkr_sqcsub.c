@@ -14,11 +14,13 @@ void get_transpile_info(char *props, char *config)
   sqcQC *qcir = sqcQuantumCircuit(1);
   sqcIbmdTranspileInfo(qcir, SQC_RPC_SCHED_QC_TYPE_IBM_DACC);
 
-  *props = qcir->backend_config_json;
-  *config = qcir->backend_props_json;
+  props = qcir->backend_config_json;
+  config = qcir->backend_props_json;
+  prinft("%s", props);
 }
 
 int main(int argc, char *argv[])
 {
+  get_transpile_info("", "");
   return 0;
 }
