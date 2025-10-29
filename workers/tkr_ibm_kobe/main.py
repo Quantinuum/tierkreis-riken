@@ -22,7 +22,10 @@ class TranspileInformation(NamedTuple):
 
 @worker.task()
 def get_backend_info() -> TranspileInformation:
+    print("get_backend_info")
     res = c_tkr_sqcsub.get_transpile_info()
+    print(res)
+    print(res.configuration)
     config = QasmBackendConfiguration.from_dict(json.loads(res.configuration))
     props = BackendProperties.from_dict(json.loads(res.properties))  # type: ignore
     return TranspileInformation(config, props)
