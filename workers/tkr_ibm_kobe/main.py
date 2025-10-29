@@ -20,7 +20,7 @@ class TranspileInformation(NamedTuple):
     props: BackendProperties
 
 
-@worker.task()
+# @worker.task()
 def get_backend_info() -> TranspileInformation:
     print("get_backend_info")
     res = c_tkr_sqcsub.get_transpile_info()
@@ -48,4 +48,5 @@ def submit(circuit: Circuit) -> BackendResult: ...
 
 
 if __name__ == "__main__":
-    worker.app(argv)
+    # worker.app(argv)
+    get_backend_info()
