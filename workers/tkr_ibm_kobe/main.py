@@ -28,8 +28,8 @@ def get_backend_info() -> TranspileInformation:
     props_json = ctypes.c_char_p()
     c_tkr_sqcsub.get_transpile_info(ctypes.byref(config_json), ctypes.byref(props_json))
 
-    print(config_json)
-    print(props_json)
+    print(config_json.value)
+    print(props_json.value)
 
     print("config")
     config = QasmBackendConfiguration.from_dict(json.loads(config_json.value))
