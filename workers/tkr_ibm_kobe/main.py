@@ -25,9 +25,12 @@ def get_backend_info() -> TranspileInformation:
     print("get_backend_info")
     res = c_tkr_sqcsub.get_transpile_info()
     print(res)
-    print(res.configuration)
+    print(json.loads(res.configuration))
     config = QasmBackendConfiguration.from_dict(json.loads(res.configuration))
+    print(config.backend_name)
+    print(json.loads(res.properties))
     props = BackendProperties.from_dict(json.loads(res.properties))  # type: ignore
+    print(props.backend_name)
     return TranspileInformation(config, props)
 
 
