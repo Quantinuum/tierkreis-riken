@@ -1,14 +1,7 @@
 #include <sqc_api.h>
 #include <sqc_ecode.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <cstdlib>
-#include <iostream>
-#include <string>
 
 #include <string>
-
 #include <tuple>
 
 // #include <pybind11/pybind11.h>
