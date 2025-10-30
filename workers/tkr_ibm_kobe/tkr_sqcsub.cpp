@@ -31,7 +31,7 @@ get_transpile_info()
     return std::tuple<std::string, std::string>(props, config);
 }
 
-NB_MODULE(tkr_sqcsub, m)
+PYBIND11_MODULE(tkr_sqcsub, m)
 {
     m.def("get_transpile_info", &get_transpile_info);
 }
