@@ -1,8 +1,8 @@
 #include "sqc_api.h"
 #include "sqc_ecode.h"
 
-#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAX_QASM_LEN (1024 * 1024)
 
