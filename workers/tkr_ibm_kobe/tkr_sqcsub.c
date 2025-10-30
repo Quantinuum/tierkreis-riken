@@ -6,7 +6,7 @@
 
 #define MAX_QASM_LEN (1024 * 1024)
 
-void get_transpile_info(char *config_file, char *props_file)
+void get_transpile_info()
 {
     sqcInitOptions *init_options = sqcMallocInitOptions();
     init_options->use_qiskit = 0;
