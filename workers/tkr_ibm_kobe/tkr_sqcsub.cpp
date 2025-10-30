@@ -11,7 +11,7 @@
 
 #include <tuple>
 
-#include <pybind11/pybind11.h>
+// #include <pybind11/pybind11.h>
 
 #define MAX_QASM_LEN (1024 * 1024)
 
@@ -34,10 +34,10 @@ get_transpile_info()
     return std::tuple<std::string, std::string>(props, config);
 }
 
-PYBIND11_MODULE(tkr_sqcsub, m)
-{
-    m.def("get_transpile_info", &get_transpile_info);
-}
+// PYBIND11_MODULE(tkr_sqcsub, m)
+// {
+//     m.def("get_transpile_info", &get_transpile_info);
+// }
 
 int main(int argc, char *argv[])
 {
