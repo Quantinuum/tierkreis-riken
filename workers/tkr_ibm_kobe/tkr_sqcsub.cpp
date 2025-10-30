@@ -7,8 +7,8 @@
 #include <iostream>
 #include <string>
 
-#include <string.h>
-#include <tuple.h>
+#include <string>
+#include <tuple>
 
 #define MAX_QASM_LEN (1024 * 1024)
 
