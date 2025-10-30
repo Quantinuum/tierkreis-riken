@@ -61,4 +61,4 @@ SQC_INCS="-I${SQC_DIR}/include/ -I${SQC_DIR}/include"
 PY_PATH=$(readlink -f $(which python3.11) | sed 's@/bin/python3.11@@g')
 PYLIB="-L${PY_PATH}/lib -lpython3.11"
 
-SQC_COMPILE_OPTIONS="${SQC_INCS} -L${SQC_DIR}/lib -L${SQC_DIR}/lib64 ${SQC_LIBS}"
+SQC_COMPILE_OPTIONS="${SQC_INCS} -L${SQC_DIR}/lib -L${SQC_DIR}/lib64 ${SQC_LIBS} ${PYLIB}"
