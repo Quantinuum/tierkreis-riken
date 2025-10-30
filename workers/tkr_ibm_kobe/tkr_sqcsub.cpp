@@ -41,7 +41,7 @@ PYBIND11_MODULE(tkr_sqcsub, m)
 
 int main(int argc, char *argv[])
 {
-    get_transpile_info(&config, &props);
+    get_transpile_info();
 
     return 0;
 }
