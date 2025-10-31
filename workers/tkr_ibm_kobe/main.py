@@ -2,6 +2,8 @@ from sys import argv
 from pytket._tket.circuit import Circuit
 from pytket.extensions.qiskit.backends.ibm import IBMQBackend
 from tierkreis import Worker
+from qiskit_ibm_runtime.models.backend_properties import BackendProperties  # type: ignore
+from qiskit_ibm_runtime.models.backend_configuration import QasmBackendConfiguration  # type: ignore
 
 from transpile_info import TranspileInfo, get_info
 
@@ -15,8 +17,10 @@ def get_transpile_info() -> TranspileInfo:
 
 
 @worker.task()
-def compile_using_info(info: TranspileInfo, circuit: Circuit) -> Circuit:
-    base_pass = IBMQBackend.default_compilation_pass_offline(info.config, info.props)
+def compile_using_info(
+    config: QasmBackendConfiguration, props: BackendProperties, circuit: Circuit
+) -> Circuit:
+    base_pass = IBMQBackend.default_compilation_pass_offline(config, props)
     base_pass.apply(circuit)
     return circuit
 

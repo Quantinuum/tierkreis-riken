@@ -9,14 +9,14 @@ dependencies = [
     "quantinuum-schemas>=7.0.0",
     "sphinx>=8.2.3",
     "sphinx-autodoc2>=0.5.0",
-    "tierkreis>=2.0.2",
+    "tierkreis",
 ]
 
 [tool.uv]
 package=true
 
 [tool.uv.sources]
-tierkreis = { path = "../tierkreis/tierkreis", editable = true }
+tierkreis = { git = "https://github.com/CQCL/tierkreis", subdirectory = "tierkreis" }
 
 [dependency-groups]
 dev = [

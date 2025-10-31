@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -xeuo pipefail
 
 source $(dirname $0)/backend_setup.sh ibm-kobe-dacc

@@ -1557,20 +1557,10 @@ wheels = [
 
 [[package]]
 name = "tierkreis"
-version = "2.0.5"
-source = { editable = "../tierkreis/tierkreis" }
+version = "2.0.6"
+source = { git = "https://github.com/CQCL/tierkreis?subdirectory=tierkreis#9faff5b59e23d5b05ee6a2a387945c350a72b7a0" }
 dependencies = [
     { name = "pydantic" },
-]
-
-[package.metadata]
-requires-dist = [{ name = "pydantic", specifier = "~=2.5" }]
-
-[package.metadata.requires-dev]
-build = [{ name = "build", extras = ["uv"] }]
-dev = [
-    { name = "ipykernel", specifier = ">=6.29.5" },
-    { name = "pytest" },
 ]
 
 [[package]]
@@ -1600,7 +1590,7 @@ requires-dist = [
     { name = "quantinuum-schemas", specifier = ">=7.0.0" },
     { name = "sphinx", specifier = ">=8.2.3" },
     { name = "sphinx-autodoc2", specifier = ">=0.5.0" },
-    { name = "tierkreis", editable = "../tierkreis/tierkreis" },
+    { name = "tierkreis", git = "https://github.com/CQCL/tierkreis?subdirectory=tierkreis" },
 ]
 
 [package.metadata.requires-dev]

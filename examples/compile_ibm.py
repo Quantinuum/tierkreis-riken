@@ -1,14 +1,14 @@
 from pathlib import Path
+from sys import argv
 from typing import NamedTuple
 from uuid import UUID
 from tierkreis import run_graph  # type: ignore
 from tierkreis.builder import GraphBuilder
-from tierkreis.consts import PACKAGE_PATH
 from tierkreis.controller.data.models import TKR, OpaqueType
-from tierkreis.executor import UvExecutor, MultipleExecutor, ShellExecutor
+from tierkreis.executor import UvExecutor
 from tierkreis.storage import FileStorage
 
-from workers.tkr_ibm_kobe.stubs import get_backend_info, compile_using_info
+from workers.tkr_ibm_kobe.stubs import get_transpile_info, compile_using_info
 
 IBMQConfig = OpaqueType["quantinuum_schemas.models.backend_config.IBMQConfig"]
 QuantinuumConfig = OpaqueType[
@@ -23,11 +23,13 @@ class SnapshotCompileRunInputs(NamedTuple):
 
 
 g = GraphBuilder(SnapshotCompileRunInputs, TKR[Circuit])
-info = g.task(get_backend_info())
-compiled_circuit = g.task(compile_using_info(info, g.inputs.circuit))
+info = g.task(get_transpile_info())
+compiled_circuit = g.task(compile_using_info(info.config, info.props, g.inputs.circuit))
 g.outputs(compiled_circuit)
 
 if __name__ == "__main__":
+    is_dev = len(argv) > 1 and argv[1] == "dev"
+
     print("ibm compile")
     import pytket._tket.circuit as pt
 
@@ -40,10 +42,14 @@ if __name__ == "__main__":
 
     storage = FileStorage(UUID(int=200), do_cleanup=True)
     # tkr_exec = UvExecutor(PACKAGE_PATH / ".." / "tierkreis_workers", storage.logs_path)
-    # riken_exec = UvExecutor(Path(__file__).parent / ".." / "workers", storage.logs_path)
-    shell_exec = ShellExecutor(
-        Path(__file__).parent / ".." / "workers", storage.workflow_dir
+    env = {"IS_DEV": "True"} if is_dev else {}
+    exec = UvExecutor(
+        Path(__file__).parent / ".." / "workers", storage.logs_path, env=env
     )
+
+    # shell_exec = ShellExecutor(
+    #     Path(__file__).parent / ".." / "workers", storage.workflow_dir
+    # )
     # executor = MultipleExecutor(
     #     tkr_exec,
     #     {"riken": riken_exec, "shell": shell_exec},
@@ -52,7 +58,7 @@ if __name__ == "__main__":
     print("running graph")
     run_graph(
         storage,
-        shell_exec,
+        exec,
         g,
         {"circuit": ghz()},
         polling_interval_seconds=1,

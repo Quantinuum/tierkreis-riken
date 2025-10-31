@@ -937,7 +937,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "pytket-qiskit", specifier = ">=0.72.0" },
-    { name = "tierkreis", specifier = ">=2.0.6" },
+    { name = "tierkreis" },
 ]
 
 [package.metadata.requires-dev]
