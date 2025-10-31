@@ -13,10 +13,8 @@ class TranspileInfo(NamedTuple):
     props: BackendProperties
 
 
-def get_transpile_info_inner(
-    is_dev: bool = os.environ.get("IS_DEV") is not None,
-) -> TranspileInfo:
-    script_file = "run_local.sh" if is_dev else "run.sh"
+def get_transpile_info_inner() -> TranspileInfo:
+    script_file = "run_local.sh" if os.environ.get("IS_DEV") else "run.sh"
     script_path = Path(__file__).parent / "scripts" / script_file
 
     with NamedTemporaryFile("w+") as config_file:
@@ -33,5 +31,5 @@ def get_transpile_info_inner(
 
 
 if __name__ == "__main__":
-    info = get_transpile_info_inner(True)
+    info = get_transpile_info_inner()
     print(info)
