@@ -12,8 +12,8 @@
 int main(int argc, char *argv[])
 {
   char *inputPath = argv[1];
-  int nQubits = strtol(argv[2]);
-  int nShots = strtol(argv[3]);
+  int nQubits = atoi(argv[2]);
+  int nShots = atoi(argv[3]);
   char *outputPath = argv[4];
 
   // Initialize C-API
