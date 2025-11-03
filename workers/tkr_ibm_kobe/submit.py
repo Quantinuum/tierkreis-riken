@@ -16,6 +16,7 @@ def submit_circuit(circuit: Circuit, n_shots: int) -> bytes:
     with TemporaryDirectory(delete=False) as dirname:
         input_file_name = f"{dirname}/input"
         output_file_name = f"{dirname}/output"
+        Path(output_file_name).touch()
         with open(input_file_name, "w+") as fh:
             qasm3.dump(qiskit_circuit, fh)  # type: ignore
 
