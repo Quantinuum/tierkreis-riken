@@ -7,7 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_QASM_LEN (1024*1024)
+#define MAX_QASM_LEN (1024 * 1024)
 
 int main(int argc, char *argv[])
 {
@@ -17,37 +17,41 @@ int main(int argc, char *argv[])
   char *outputPath = argv[4];
 
   // Initialize C-API
-  sqcInitOptions* init_options = sqcMallocInitOptions();
+  sqcInitOptions *init_options = sqcMallocInitOptions();
   init_options->use_qiskit = 0;
-  sqcInitialize(init_options); 
+  sqcInitialize(init_options);
 
   // Read OpenQASM file
-  sqcQC* qcir = sqcQuantumCircuit(nQubits);
+  sqcQC *qcir = sqcQuantumCircuit(nQubits);
   qcir->qasm = (char *)calloc(sizeof(char), MAX_QASM_LEN);
   sqcReadQasmFile(&(qcir->qasm), inputPath, MAX_QASM_LEN);
 
   // Set run option
-  sqcRunOptions* run_options = (sqcRunOptions*)malloc(sizeof(sqcRunOptions));
+  sqcRunOptions *run_options = (sqcRunOptions *)malloc(sizeof(sqcRunOptions));
   sqcInitializeRunOpt(run_options);
   run_options->nshots = nShots;
   run_options->qubits = nQubits;
   run_options->outFormat = SQC_OUT_RAW;
 
   // Run quantum circuit
-  sqcOut* result_out;
+  sqcOut *result_out;
   result_out = (sqcOut *)malloc(sizeof(sqcOut));
   int error_code = sqcQCRun(qcir, SQC_RPC_SCHED_QC_TYPE_QTM_SIM_GRPC, *run_options, result_out);
-  
+
   // Show error_code
   printf("error_code:%d\n", error_code);
 
   // Write result to file
-  if ( error_code == SQC_RESULT_OK ) {
+  if (error_code == SQC_RESULT_OK)
+  {
     FILE *file;
     file = fopen(outputPath, "w");
-    if (file == NULL) {
+    if (file == NULL)
+    {
       printf("Error opening file.\n");
-    } else {
+    }
+    else
+    {
       sqcPrintQCResult(file, result_out, run_options->outFormat);
       fclose(file);
     }
@@ -59,6 +63,6 @@ int main(int argc, char *argv[])
   sqcDestroyQuantumCircuit(qcir);
   sqcFinalize(init_options);
   sqcFreeInitOptions(init_options);
-  
+
   return 0;
 }
