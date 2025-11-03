@@ -41,7 +41,6 @@ Compilation can be only accessed if reimei is accessible by this account.
 
 The pytket worker exposes the following elementary tasks to the user:
 
-- `qnx_login` terminal based login for Quantinuum Nexus
 - `get_backend_info` gets the BackendInfo object for reimei
 - `pass_from_info` gets the default pass from an BackendInfo object
 - `compile` compiles a circuit for reimei

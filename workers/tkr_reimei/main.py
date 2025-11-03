@@ -3,7 +3,6 @@ from sys import argv, modules
 from unittest.mock import Mock
 
 import qnexus as qnx
-from impl import parse_qsubmit, run_sqcsub
 from pytket._tket.circuit import Circuit
 from pytket.backends.backendinfo import BackendInfo
 from pytket.backends.backendresult import BackendResult
@@ -11,29 +10,17 @@ from pytket.passes import BasePass
 from tierkreis import Worker
 from tierkreis.exceptions import TierkreisError
 
+from sqcsub_impl import parse_qsubmit, run_sqcsub
+from qnexus_impl import qnexus_quantinuum_device_by_name
+
 worker = Worker("tkr_reimei")
 BATCH_FILE = Path("_scr/batches/batch_file.txt")
 
 
 @worker.task()
-def qnx_login() -> int:
-    # cannot return None
-    try:
-        qnx.login_with_credentials()
-        return 0
-    except Exception as e:
-        print(f"Error logging in to QNX: {e}")
-        return 1
-
-
-@worker.task()
 def get_backend_info(device_name: str = "reimei") -> BackendInfo:
-    devices = list(
-        filter(lambda d: d.device_name == device_name, qnx.devices.get_all())
-    )
-    if len(devices) != 1:
-        raise TierkreisError(f"Could not find device '{device_name}'")
-    return devices[0].backend_info
+    device = qnexus_quantinuum_device_by_name(device_name)
+    return device.backend_info
 
 
 @worker.task()
@@ -54,11 +41,9 @@ def compile(circuit: Circuit, optimisation_level: int) -> Circuit:
     modules["pyqir"] = mock  # pyqir is not installed on fugaku
     from pytket.extensions.quantinuum.backends.quantinuum import QuantinuumBackend
 
-    devices = list(filter(lambda d: d.device_name == "reimei", qnx.devices.get_all()))
-    if len(devices) != 1:
-        raise TierkreisError("Could not find device 'reimei'")
+    device = qnexus_quantinuum_device_by_name("reimei")
     compilation_pass = QuantinuumBackend.pass_from_info(
-        devices[0].backend_info, optimisation_level=optimisation_level
+        device.backend_info, optimisation_level=optimisation_level
     )
     compilation_pass.apply(circuit)
     return circuit

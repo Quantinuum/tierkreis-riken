@@ -4,16 +4,6 @@ from typing import NamedTuple
 from tierkreis.controller.data.models import TKR, OpaqueType
 
 
-class qnx_login(NamedTuple):
-    @staticmethod
-    def out() -> type[TKR[int]]:  # noqa: F821 # fmt: skip
-        return TKR[int]  # noqa: F821 # fmt: skip
-
-    @property
-    def namespace(self) -> str:
-        return "tkr_reimei"
-
-
 class get_backend_info(NamedTuple):
     device_name: TKR[str] | None = None  # noqa: F821 # fmt: skip
 
