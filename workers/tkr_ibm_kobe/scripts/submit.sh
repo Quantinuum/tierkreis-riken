@@ -9,4 +9,4 @@ sqcsub --nqubits $input_nqubits_value \
     --iformat $input_iformat_value \
     --ofile $output_value_file \
     --oformat $input_oformat_value \
-    --qpu $input_qpu_value &
+    --qpu $input_qpu_value
