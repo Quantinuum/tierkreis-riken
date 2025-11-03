@@ -12,9 +12,9 @@ def submit_circuit(circuit: Circuit, n_shots: int) -> bytes:
     script_file = "submit_local.sh" if os.environ.get("IS_DEV") else "submit.sh"
     script_path = Path(__file__).parent / "scripts" / script_file
     qiskit_circuit = tk_to_qiskit(circuit)
-    with NamedTemporaryFile("r", delete=False) as output_file:
+    with NamedTemporaryFile("w+", delete=False) as output_file:
         print(output_file.name)
-        with NamedTemporaryFile("w+") as input_file:
+        with NamedTemporaryFile("w+", delete=False) as input_file:
             qasm3.dump(qiskit_circuit, input_file)  # type: ignore
             subprocess.run(
                 [
