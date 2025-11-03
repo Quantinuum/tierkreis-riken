@@ -54,13 +54,9 @@ int main(int argc, char *argv[])
     }
     else
     {
-      sqcPrintQCResult(file, result_out, run_options->outFormat);
+      sqcPrintQCResult("./results.txt", result_out, run_options->outFormat);
       fclose(file);
     }
-  }
-  else
-  {
-    return 1;
   }
 
   // End processing of C-API
