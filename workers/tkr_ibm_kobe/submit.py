@@ -2,7 +2,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
-from tempfile import NamedTemporaryFile
+from tempfile import TemporaryDirectory
 from pytket.extensions.qiskit.qiskit_convert import tk_to_qiskit
 from pytket._tket.circuit import Circuit
 from qiskit import qasm3  # type: ignore
@@ -13,22 +13,24 @@ def submit_circuit(circuit: Circuit, n_shots: int) -> bytes:
     script_path = Path(__file__).parent / "scripts" / script_file
 
     qiskit_circuit = tk_to_qiskit(circuit)
-    with NamedTemporaryFile("w+", delete=False) as output_file:
-        with NamedTemporaryFile("w+", delete=False) as input_file:
-            qasm3.dump(qiskit_circuit, input_file)  # type: ignore
+    with TemporaryDirectory(delete=False) as dirname:
+        input_file_name = f"{dirname}/input"
+        output_file_name = f"{dirname}/output"
+        with open(input_file_name, "w+") as fh:
+            qasm3.dump(qiskit_circuit, fh)  # type: ignore
 
-            env: dict[str, str] = {
-                "input_nqubits_value": str(circuit.n_qubits),
-                "input_nshots_value": str(n_shots),
-                "input_ifile_file": input_file.name,
-                "input_iformat_value": "qasm",
-                "output_value_file": output_file.name,
-                "input_oformat_value": "raw",
-                "input_qpu_value": "ibm-kobe-dacc",
-            }
-            subprocess.run([script_path], env=env)
+        env: dict[str, str] = {
+            "input_nqubits_value": str(circuit.n_qubits),
+            "input_nshots_value": str(n_shots),
+            "input_ifile_file": input_file_name,
+            "input_iformat_value": "qasm",
+            "output_value_file": output_file_name,
+            "input_oformat_value": "raw",
+            "input_qpu_value": "ibm-kobe-dacc",
+        }
+        subprocess.run([script_path], env=env)
 
-        with open(output_file.name) as fh:
+        with open(output_file_name) as fh:
             return fh.read().encode()
 
 
