@@ -16,6 +16,8 @@ int main(int argc, char *argv[])
   int nShots = atoi(argv[3]);
   char *outputPath = argv[4];
 
+  printf("%s %d %d %s", inputPath, nQubits, nShots, outputPath);
+
   // Initialize C-API
   sqcInitOptions *init_options = sqcMallocInitOptions();
   init_options->use_qiskit = 0;
@@ -55,12 +57,6 @@ int main(int argc, char *argv[])
       sqcPrintQCResult(file, result_out, run_options->outFormat);
       fclose(file);
     }
-  }
-  else
-  {
-    FILE *file;
-    file = fopen(outputPath, "w");
-    fprintf(file, "error code: %d", error_code);
   }
 
   // End processing of C-API
