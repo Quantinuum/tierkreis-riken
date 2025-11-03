@@ -11,7 +11,6 @@
 
 int main(int argc, char *argv[])
 {
-  return 1;
   char *inputPath = argv[1];
   int nQubits = atoi(argv[2]);
   int nShots = atoi(argv[3]);

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 
 input_nqubits_value=$(cat $input_nqubits_file)
 input_nshots_value=$(cat $input_nshots_file)

@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -xeuo pipefail
 
 #Setting up Remote Procedure Call (RPC)
