@@ -54,7 +54,6 @@ def compile(circuit: Circuit, optimisation_level: int) -> Circuit:
     modules["pyqir"] = mock  # pyqir is not installed on fugaku
     from pytket.extensions.quantinuum.backends.quantinuum import QuantinuumBackend
 
-    qnx.login_with_credentials()
     devices = list(filter(lambda d: d.device_name == "reimei", qnx.devices.get_all()))
     if len(devices) != 1:
         raise TierkreisError("Could not find device 'reimei'")

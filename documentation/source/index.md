@@ -8,4 +8,6 @@
 
 [IBM Kobe](workers/ibm_kobe.md)
 
+[Reimei](workers/reimei.md)
+
 [Qulacs](workers/qulacs.md)
