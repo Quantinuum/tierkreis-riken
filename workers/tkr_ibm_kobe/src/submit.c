@@ -56,6 +56,12 @@ int main(int argc, char *argv[])
       fclose(file);
     }
   }
+  else
+  {
+    FILE *file;
+    file = fopen(outputPath, "w");
+    fprintf(file, "error code: %d", error_code);
+  }
 
   // End processing of C-API
   sqcFreeOut(result_out, run_options->outFormat);
