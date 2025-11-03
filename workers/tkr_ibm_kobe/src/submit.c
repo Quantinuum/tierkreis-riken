@@ -51,13 +51,16 @@ int main(int argc, char *argv[])
     if (file == NULL)
     {
       printf("Error opening file.\n");
-      return 1;
     }
     else
     {
       sqcPrintQCResult(file, result_out, run_options->outFormat);
       fclose(file);
     }
+  }
+  else
+  {
+    return 1;
   }
 
   // End processing of C-API
