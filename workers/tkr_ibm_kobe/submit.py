@@ -29,5 +29,13 @@ def submit_circuit(circuit: Circuit, n_shots: int) -> bytes:
 
 
 if __name__ == "__main__":
-    res = submit_circuit(Circuit(2), 10)
+
+    def ghz() -> Circuit:
+        circ1 = Circuit(2)
+        circ1.H(0)
+        circ1.CX(0, 1)
+        circ1.measure_all()
+        return circ1
+
+    res = submit_circuit(ghz(), 10)
     print(res)
