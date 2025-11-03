@@ -9,7 +9,7 @@ from qiskit import qasm3  # type: ignore
 
 
 def submit_circuit(circuit: Circuit, n_shots: int) -> bytes:
-    command = ["source", "/vol0300/share/ra010014/jhpcq/x86/scripts/setenv-sqcsub.sh"]
+    command = [".", "/vol0300/share/ra010014/jhpcq/x86/scripts/setenv-sqcsub.sh"]
     command.append("ibm-kobe-dacc")
     command.extend(["&&", "sqcsub"])
     if os.environ.get("IS_DEV"):
