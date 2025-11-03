@@ -7,13 +7,14 @@ from tierkreis.executor import UvExecutor
 from tierkreis.storage import FileStorage, read_outputs  # type: ignore
 
 from data import RIKEN_WORKERS_DIR, ghz
-from workers.tkr_ibm_kobe.stubs import get_transpile_info, compile_using_info
+from workers.tkr_ibm_kobe.stubs import get_transpile_info, compile_using_info, submit
 
 Circuit = OpaqueType["pytket._tket.circuit.Circuit"]
-g = GraphBuilder(TKR[Circuit], TKR[Circuit])
+g = GraphBuilder(TKR[Circuit], TKR[bytes])
 info = g.task(get_transpile_info())
 compiled_circuit = g.task(compile_using_info(info.config, info.props, g.inputs))
-g.outputs(compiled_circuit)
+res = g.task(submit(compiled_circuit, g.const(10)))
+g.outputs(res)
 
 if __name__ == "__main__":
     storage = FileStorage(UUID(int=200), do_cleanup=True)
