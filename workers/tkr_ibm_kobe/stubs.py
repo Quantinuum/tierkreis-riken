@@ -38,8 +38,8 @@ class submit(NamedTuple):
     n_shots: TKR[int]  # noqa: F821 # fmt: skip
 
     @staticmethod
-    def out() -> type[TKR[bytes]]:  # noqa: F821 # fmt: skip
-        return TKR[bytes]  # noqa: F821 # fmt: skip
+    def out() -> type[TKR[OpaqueType["pytket.backends.backendresult.BackendResult"]]]:  # noqa: F821 # fmt: skip
+        return TKR[OpaqueType["pytket.backends.backendresult.BackendResult"]]  # noqa: F821 # fmt: skip
 
     @property
     def namespace(self) -> str:

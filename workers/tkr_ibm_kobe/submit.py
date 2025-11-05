@@ -3,9 +3,15 @@ import os
 from pathlib import Path
 import subprocess
 from tempfile import TemporaryDirectory
-from pytket.extensions.qiskit.qiskit_convert import tk_to_qiskit
+from typing import Any
+
 from pytket._tket.circuit import Circuit
+from pytket.backends.backendresult import BackendResult
+from pytket.extensions.qiskit.qiskit_convert import tk_to_qiskit
+from pytket.utils.outcomearray import OutcomeArray
 from qiskit import qasm3  # type: ignore
+from qiskit.primitives.containers import SamplerPubResult, BitArray, PrimitiveResult, PubResult  # type: ignore
+from qiskit_ibm_runtime import RuntimeDecoder
 
 
 def submit_circuit(circuit: Circuit, n_shots: int) -> bytes:
@@ -35,14 +41,24 @@ def submit_circuit(circuit: Circuit, n_shots: int) -> bytes:
             return json.load(fh)
 
 
+def parse_results(res: Any) -> BackendResult:
+    print(res["results"][0]["data"]["c"]["samples"])
+    ba = BitArray.from_samples(res["results"][0]["data"]["c"]["samples"])
+    print(ba.get_counts())
+    print(ba.get_bitstrings())
+    print(ba.get_int_counts())
+    brs = [
+        backend_result_from_bitstrings(ba["samples"])
+        for _, ba in res["results"][0]["data"].items()
+    ]
+    assert len(brs) == 1
+    return brs[0]
+
+
 if __name__ == "__main__":
 
-    def ghz() -> Circuit:
-        circ1 = Circuit(2)
-        circ1.H(0)
-        circ1.CX(0, 1)
-        circ1.measure_all()
-        return circ1
+    circ = Circuit(2, 2)
+    circ.X(1).measure_all()
 
-    res = submit_circuit(ghz(), 10)
-    print(res)
+    res = submit_circuit(circ, 10)
+    parse_results(res)

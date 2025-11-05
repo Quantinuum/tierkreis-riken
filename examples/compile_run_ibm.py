@@ -10,7 +10,8 @@ from data import RIKEN_WORKERS_DIR, ghz
 from workers.tkr_ibm_kobe.stubs import get_transpile_info, compile_using_info, submit
 
 Circuit = OpaqueType["pytket._tket.circuit.Circuit"]
-g = GraphBuilder(TKR[Circuit], TKR[bytes])
+BackendResult = OpaqueType["pytket.backends.backendresult.BackendResult"]
+g = GraphBuilder(TKR[Circuit], TKR[BackendResult])
 info = g.task(get_transpile_info())
 compiled_circuit = g.task(compile_using_info(info.config, info.props, g.inputs))
 res = g.task(submit(compiled_circuit, g.const(10)))

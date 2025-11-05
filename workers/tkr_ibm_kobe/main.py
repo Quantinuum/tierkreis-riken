@@ -8,7 +8,7 @@ from qiskit_ibm_runtime.models.backend_configuration import QasmBackendConfigura
 
 from tierkreis import Worker
 
-from submit import submit_circuit
+from submit import parse_results, submit_circuit
 from transpile_info import TranspileInfo, get_info
 
 
@@ -30,8 +30,9 @@ def compile_using_info(
 
 
 @worker.task()
-def submit(circuit: Circuit, n_shots: int) -> bytes:
-    return submit_circuit(circuit, n_shots)
+def submit(circuit: Circuit, n_shots: int) -> BackendResult:
+    res = submit_circuit(circuit, n_shots)
+    return parse_results(res)
 
 
 if __name__ == "__main__":
