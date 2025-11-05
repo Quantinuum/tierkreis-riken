@@ -1,0 +1,24 @@
+from sys import argv
+from uuid import UUID
+from tierkreis import run_graph  # type: ignore
+from tierkreis.builder import GraphBuilder
+from tierkreis.controller.data.models import TKR, OpaqueType
+from tierkreis.executor import UvExecutor
+from tierkreis.storage import FileStorage, read_outputs  # type: ignore
+
+from data import RIKEN_WORKERS_DIR, ghz
+from workers.tkr_ibm_kobe.stubs import get_transpile_info, compile_using_info
+
+Circuit = OpaqueType["pytket._tket.circuit.Circuit"]
+g = GraphBuilder(TKR[Circuit], TKR[Circuit])
+info = g.task(get_transpile_info())
+compiled_circuit = g.task(compile_using_info(info.config, info.props, g.inputs))
+g.outputs(compiled_circuit)
+
+if __name__ == "__main__":
+    storage = FileStorage(UUID(int=200), do_cleanup=True)
+    env = {"IS_DEV": "True"} if len(argv) > 1 and argv[1] == "dev" else {}
+    exec = UvExecutor(RIKEN_WORKERS_DIR, storage.logs_path, env=env)
+    run_graph(storage, exec, g, ghz(), polling_interval_seconds=1)
+    output = read_outputs(g, storage)
+    print(output)
