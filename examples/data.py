@@ -10,3 +10,9 @@ def ghz() -> Circuit:
     circ1.CX(0, 1)
     circ1.measure_all()
     return circ1
+
+
+def deterministic() -> Circuit:
+    circ = Circuit(2, 2)
+    circ.X(1).measure_all()
+    return circ

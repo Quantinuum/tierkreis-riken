@@ -52,7 +52,6 @@ def parse_results(res: Any) -> dict[str, list[str]]:
 
 
 if __name__ == "__main__":
-
     circ = Circuit(2, 2)
     circ.X(1).measure_all()
 
