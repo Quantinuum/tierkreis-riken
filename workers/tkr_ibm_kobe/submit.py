@@ -57,4 +57,5 @@ if __name__ == "__main__":
     circ.X(1).measure_all()
 
     res = submit_circuit(circ, 10)
-    parse_results(res)
+    shots = parse_results(res)
+    print(shots)

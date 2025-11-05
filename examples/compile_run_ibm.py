@@ -11,7 +11,7 @@ from workers.tkr_ibm_kobe.stubs import get_transpile_info, compile_using_info, s
 
 Circuit = OpaqueType["pytket._tket.circuit.Circuit"]
 BackendResult = OpaqueType["pytket.backends.backendresult.BackendResult"]
-g = GraphBuilder(TKR[Circuit], TKR[BackendResult])
+g = GraphBuilder(TKR[Circuit], TKR[dict[str, list[str]]])
 info = g.task(get_transpile_info())
 compiled_circuit = g.task(compile_using_info(info.config, info.props, g.inputs))
 res = g.task(submit(compiled_circuit, g.const(10)))
