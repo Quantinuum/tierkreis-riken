@@ -6,12 +6,9 @@ from tempfile import TemporaryDirectory
 from typing import Any
 
 from pytket._tket.circuit import Circuit
-from pytket.backends.backendresult import BackendResult
 from pytket.extensions.qiskit.qiskit_convert import tk_to_qiskit
-from pytket.utils.outcomearray import OutcomeArray
 from qiskit import qasm3  # type: ignore
-from qiskit.primitives.containers import SamplerPubResult, BitArray, PrimitiveResult, PubResult  # type: ignore
-from qiskit_ibm_runtime import RuntimeDecoder
+from qiskit.primitives.containers import BitArray  # type: ignore
 
 
 def submit_circuit(circuit: Circuit, n_shots: int) -> bytes:
@@ -41,19 +38,17 @@ def submit_circuit(circuit: Circuit, n_shots: int) -> bytes:
             return json.load(fh)
 
 
-def parse_results(res: Any) -> BackendResult:
-    print(res)
-    print(res["results"][0]["data"]["c"]["samples"])
-    ba = BitArray.from_samples(res["results"][0]["data"]["c"]["samples"])
-    print(ba.get_counts())
-    print(ba.get_bitstrings())
-    print(ba.get_int_counts())
-    brs = [
-        backend_result_from_bitstrings(ba["samples"])
-        for _, ba in res["results"][0]["data"].items()
-    ]
-    assert len(brs) == 1
-    return brs[0]
+def parse_results(res: Any) -> dict[str, list[str]]:
+    raw_result = res["results"][0]["data"]
+    results: dict[str, list[str]] = {}
+
+    for k, v in raw_result.items():
+        ba = BitArray.from_samples(v["samples"])
+        bitstrings = ba.get_bitstrings()
+        bitstrings = [x[::-1] for x in bitstrings]
+        results[k] = bitstrings
+
+    return results
 
 
 if __name__ == "__main__":
