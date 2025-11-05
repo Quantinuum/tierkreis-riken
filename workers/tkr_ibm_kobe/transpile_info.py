@@ -21,14 +21,14 @@ def get_info() -> TranspileInfo:
     )
     script_path = Path(__file__).parent / "scripts" / script_file
 
-    with NamedTemporaryFile("w+", delete=False) as config_file:
+    with NamedTemporaryFile("w+") as config_file:
         with NamedTemporaryFile("w+") as props_file:
             subprocess.run([script_path, config_file.name, props_file.name])
 
             config_json = json.load(config_file)
             props_json = json.load(props_file)
 
-    return TranspileInfo(config_json, props_json)
+            return TranspileInfo(config_json, props_json)
 
 
 if __name__ == "__main__":

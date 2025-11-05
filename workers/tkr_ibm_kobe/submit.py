@@ -16,7 +16,7 @@ def submit_circuit(circuit: Circuit, n_shots: int) -> bytes:
     script_path = Path(__file__).parent / "scripts" / script_file
 
     qiskit_circuit = tk_to_qiskit(circuit)
-    with TemporaryDirectory(delete=False) as dirname:
+    with TemporaryDirectory() as dirname:
         input_file_name = f"{dirname}/input"
         output_file_name = f"{dirname}/output"
         Path(output_file_name).touch()
