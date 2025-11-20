@@ -12,8 +12,10 @@ dependencies = [
 dev = [
     "black>=25.9.0",
     "ruff>=0.14.3",
+    "pytest>=9.0.1",
 ]
-
+[tool.setuptools]
+py-modules = []
 
 [project.optional-dependencies]
 qir = [

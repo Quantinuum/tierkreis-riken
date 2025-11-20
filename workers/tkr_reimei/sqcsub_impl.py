@@ -81,5 +81,5 @@ def parse_qsubmit_to_dict(input_str: str) -> dict[str, list[str]]:
     for block in blocks:
         for line in block.splitlines():
             register, bits_str = map(str.strip, line.split(":", 1))
-            results[register].append(bits_str[::-1])
+            results[register].append(bits_str.strip('"')[::-1])
     return dict(results)
