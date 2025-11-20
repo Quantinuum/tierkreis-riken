@@ -4,12 +4,11 @@ from unittest.mock import Mock
 
 from pytket._tket.circuit import Circuit
 from pytket.backends.backendinfo import BackendInfo
-from pytket.backends.backendresult import BackendResult
 from pytket.architecture import FullyConnected
 from pytket.passes import BasePass
 from tierkreis import Worker
 
-from sqcsub_impl import parse_qsubmit, run_sqcsub
+from sqcsub_impl import parse_qsubmit_to_dict, run_sqcsub
 from qnexus_impl import qnexus_quantinuum_device_by_name, REIMEI_OPS
 
 worker = Worker("tkr_reimei")
@@ -83,28 +82,28 @@ def compile_offline(
 @worker.task()
 def sqcsub_submit_circuits(
     circuits: list[Circuit], n_shots: int
-) -> list[BackendResult]:
+) -> list[dict[str, list[str]]]:
     results = []
     for circuit in circuits:
         result_file = run_sqcsub(circuit, n_shots)
         with open(result_file, "r") as f:
-            result = parse_qsubmit(f.read())
+            result = parse_qsubmit_to_dict(f.read())
         results.append(result)
     return results
 
 
 @worker.task()
-def sqcsub_submit_circuit(circuit: Circuit, n_shots: int) -> BackendResult:
+def sqcsub_submit_circuit(circuit: Circuit, n_shots: int) -> dict[str, list[str]]:
     result_file = run_sqcsub(circuit, n_shots)
     with open(result_file, "r") as f:
-        result = parse_qsubmit(f.read())
+        result = parse_qsubmit_to_dict(f.read())
     return result
 
 
 @worker.task()
 def sqcsub_submit_batched(
     circuit: Circuit, n_shots: int, batch_size: int = 100
-) -> BackendResult:
+) -> dict[str, list[str]]:
     if not BATCH_FILE.exists():
         BATCH_FILE.parent.mkdir(parents=True, exist_ok=True)
         with open(BATCH_FILE, "w+") as fh:
@@ -125,12 +124,12 @@ def sqcsub_submit_batched(
 
     with open(BATCH_FILE, "r") as fh:
         fh.readline()  # First line is the number of shots
-        return parse_qsubmit(fh.read())
+        return parse_qsubmit_to_dict(fh.read())
 
 
 @worker.task()
-def parse_sqcsub_output(sqcsub_output: bytes) -> BackendResult:
-    return parse_qsubmit(sqcsub_output.decode())
+def parse_sqcsub_output(sqcsub_output: bytes) -> dict[str, list[str]]:
+    return parse_qsubmit_to_dict(sqcsub_output.decode())
 
 
 if __name__ == "__main__":

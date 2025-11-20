@@ -62,7 +62,7 @@ The pytket worker exposes the following elementary tasks to the user:
 - `compile` compiles a circuit for reimei. **Requires authentication**.
 - `compile_offline` compiles a circuit for reimei using hardcoded values for the `BackendInfo`.
 - `sqcsub_submit_circuits` and `sqcsub_submit_circuit` submit one/multiple circuits to reimei using `sqcsub` through python.
-- `parse_sqcsub_output` parses the output of the `sqcsub` command to a BackendResult.
+- `parse_sqcsub_output` parses the output of the `sqcsub` command to a dictionary mapping registers to a list of shots.
 
 Experimental
 
@@ -83,8 +83,7 @@ from data import RIKEN_WORKERS_DIR, ghz
 from workers.tkr_reimei.stubs import compile, sqcsub_submit_circuit
 
 Circuit = OpaqueType["pytket._tket.circuit.Circuit"]
-BackendResult = OpaqueType["pytket.backends.backendresult.BackendResult"]
-g = GraphBuilder(TKR[Circuit], TKR[BackendResult])
+g = GraphBuilder(TKR[Circuit], TKR[dict[str, list[str]]])
 compiled_circuit = g.task(compile(g.inputs, g.const(3)))
 results = g.task(sqcsub_submit_circuit(compiled_circuit, g.const(1024)))
 g.outputs()

@@ -1,4 +1,5 @@
 import ast
+from collections import defaultdict
 import re
 import subprocess
 from pathlib import Path
@@ -72,3 +73,13 @@ def _parse_block(block: str) -> tuple[list[int], tuple[Bit, ...]]:
     sorted_pairs = sorted(zip(bits, bit_register), key=lambda pair: str(pair[1]))
     sorted_readout, sorted_bits = zip(*sorted_pairs)
     return list(sorted_readout), sorted_bits
+
+
+def parse_qsubmit_to_dict(input_str: str) -> dict[str, list[str]]:
+    blocks: list[str] = re.findall(r"\{\s*\n(.*?)\n\s*\}", input_str, re.DOTALL)
+    results: dict[str, list[str]] = defaultdict(list)
+    for block in blocks:
+        for line in block.splitlines():
+            register, bits_str = map(str.strip, line.split(":", 1))
+            results[register].append(bits_str[::-1])
+    return dict(results)
