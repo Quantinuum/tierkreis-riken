@@ -1,11 +1,15 @@
 # Tierkreis on Fugaku
 
-[Fugaku executor](fugaku_executor.md)
+## pjsub executor
+
+Please use the general [HPCExecutor for Tierkreis](https://quantinuum.github.io/tierkreis/executors/hpc.html).
+An example using pjsub is [here](https://quantinuum.github.io/tierkreis/executors/hpc/pjsub-fugaku.html).
 
 ## Workers
 
-[IBM Kobe](workers/ibm_kobe.md)
-
-[Reimei](workers/reimei.md)
-
-[Qulacs](workers/qulacs.md)
+```{toctree}
+:maxdepth: 3
+workers/ibm_kobe.md
+workers/reimei.md
+workers/sqcsub.md
+```
