@@ -1,8 +1,10 @@
 import ast
 from collections import defaultdict
+import json
 import re
 import subprocess
 from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
 from pytket._tket.circuit import Circuit
@@ -24,6 +26,12 @@ def run_sqcsub(
     result_file = dname / "result.txt"
     log_file = dname / "result.out"
     n_qubits = circuit.n_qubits
+
+    # Write input circuit to file
+    with open(in_file, "w+") as fh:
+        d: dict[str, Any] = circuit.to_dict()  # type: ignore
+        json.dump(d, fh)
+
     # Generate a command
     args = [
         "source /vol0300/share/ra010014/jhpcq/x86/scripts/setenv-sqcsub.sh reimei",
@@ -41,16 +49,12 @@ def run_sqcsub(
     cmd = " ".join(args)
     with open(log_file, "w") as fh:
         print(cmd, file=fh)
-        try:
-            subprocess.check_call(
-                cmd,
-                shell=True,
-                stderr=fh,
-                stdout=fh,
-            )
-        except subprocess.CalledProcessError as err:
-            print(err.output)
-            raise err
+        subprocess.check_call(
+            cmd,
+            shell=True,
+            stderr=fh,
+            stdout=fh,
+        )
 
     return str(result_file)
 
