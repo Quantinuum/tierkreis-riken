@@ -12,6 +12,7 @@ from pytket._tket.circuit import Circuit
 from pytket._tket.unit_id import Bit
 from pytket.backends.backendresult import BackendResult
 from pytket.utils.outcomearray import OutcomeArray
+from pytket.qasm.qasm import circuit_to_qasm
 
 logger = logging.getLogger(__name__)
 
@@ -29,9 +30,7 @@ def run_sqcsub(circuit: Circuit, n_shots: int, simulate: bool) -> str:
     n_qubits = circuit.n_qubits
 
     # Write input circuit to file
-    with open(in_file, "w+") as fh:
-        d: dict[str, Any] = circuit.to_dict()  # type: ignore
-        json.dump(d, fh)
+    circuit_to_qasm(circuit, str(in_file))
 
     # Generate a command
     args = [
