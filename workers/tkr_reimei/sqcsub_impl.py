@@ -16,10 +16,8 @@ from pytket.utils.outcomearray import OutcomeArray
 logger = logging.getLogger(__name__)
 
 
-def run_sqcsub(
-    circuit: Circuit,
-    n_shots: int,
-) -> str:
+def run_sqcsub(circuit: Circuit, n_shots: int, simulate: bool) -> str:
+    device_name = "reimei-simulator" if simulate else "reimei"
     # Scratch directory.
     name = f"{uuid4()}"
     dname = Path().home() / "_scr" / name
@@ -37,7 +35,7 @@ def run_sqcsub(
 
     # Generate a command
     args = [
-        "source /vol0300/share/ra010014/jhpcq/x86/scripts/setenv-sqcsub.sh reimei",
+        f"source /vol0300/share/ra010014/jhpcq/x86/scripts/setenv-sqcsub.sh {device_name}",
         "&&",
         "sqcsub",
     ]
@@ -47,7 +45,7 @@ def run_sqcsub(
     args.extend(["--iformat", "qasm"])
     args.extend(["--ofile", str(result_file)])
     args.extend(["--oformat", "raw"])
-    args.extend(["--qpu", "reimei"])
+    args.extend(["--qpu", device_name])
 
     cmd = " ".join(args)
     with open(log_file, "w") as fh:
