@@ -1,5 +1,5 @@
 from pathlib import Path
-from sys import argv, modules
+from sys import argv
 
 from pytket._tket.circuit import Circuit
 from pytket.backends.backendinfo import BackendInfo
@@ -9,7 +9,7 @@ from tierkreis import Worker
 
 from sqcsub_impl import parse_qsubmit_to_dict, run_sqcsub
 from qnexus_impl import qnexus_quantinuum_device_by_name, REIMEI_OPS
-from workers.tkr_reimei.pyqir import mock_pyqir
+from pyqir import mock_pyqir
 
 worker = Worker("tkr_reimei")
 BATCH_FILE = Path("_scr/batches/batch_file.txt")
