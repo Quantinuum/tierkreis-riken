@@ -61,8 +61,8 @@ def compile_offline(
     :return: The compiled circuit.
     :rtype: Circuit
     """
-    mock = Mock()
-    modules["pyqir"] = mock  # pyqir is not installed on fugaku
+    # mock = Mock()
+    # modules["pyqir"] = mock  # pyqir is not installed on fugaku
     from pytket.extensions.quantinuum.backends.quantinuum import QuantinuumBackend
 
     compilation_pass = QuantinuumBackend.pass_from_info(
