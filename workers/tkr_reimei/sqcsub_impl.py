@@ -60,7 +60,7 @@ def run_sqcsub(
                 stdout=fh,
             )
         except subprocess.CalledProcessError as e:
-            with open(result_file) as fh:
+            with open(log_file) as fh:
                 logger.error(fh.read())
             raise e
 
