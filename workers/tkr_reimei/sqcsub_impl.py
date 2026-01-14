@@ -30,7 +30,7 @@ def run_sqcsub(circuit: Circuit, n_shots: int, simulate: bool) -> str:
     n_qubits = circuit.n_qubits
 
     # Write input circuit to file
-    circuit_to_qasm(circuit, str(in_file))
+    circuit_to_qasm(circuit, str(in_file), header="hqslib1")
 
     # Generate a command
     args = [
