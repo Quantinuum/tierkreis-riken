@@ -41,12 +41,16 @@ def run_sqcsub(
     cmd = " ".join(args)
     with open(log_file, "w") as fh:
         print(cmd, file=fh)
-        subprocess.check_call(
-            cmd,
-            shell=True,
-            stderr=fh,
-            stdout=fh,
-        )
+        try:
+            subprocess.check_call(
+                cmd,
+                shell=True,
+                stderr=fh,
+                stdout=fh,
+            )
+        except subprocess.CalledProcessError as err:
+            print(err.output)
+            raise err
 
     return str(result_file)
 
