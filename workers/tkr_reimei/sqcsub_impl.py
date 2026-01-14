@@ -1,6 +1,7 @@
 import ast
 from collections import defaultdict
 import json
+import logging
 import re
 import subprocess
 from pathlib import Path
@@ -11,6 +12,8 @@ from pytket._tket.circuit import Circuit
 from pytket._tket.unit_id import Bit
 from pytket.backends.backendresult import BackendResult
 from pytket.utils.outcomearray import OutcomeArray
+
+logger = logging.getLogger(__name__)
 
 
 def run_sqcsub(
@@ -49,12 +52,17 @@ def run_sqcsub(
     cmd = " ".join(args)
     with open(log_file, "w") as fh:
         print(cmd, file=fh)
-        subprocess.check_call(
-            cmd,
-            shell=True,
-            stderr=fh,
-            stdout=fh,
-        )
+        try:
+            subprocess.check_call(
+                cmd,
+                shell=True,
+                stderr=fh,
+                stdout=fh,
+            )
+        except subprocess.CalledProcessError as e:
+            with open(result_file) as fh:
+                logger.error(fh.read())
+            raise e
 
     return str(result_file)
 
