@@ -79,7 +79,7 @@ from tierkreis.controller.data.models import TKR, OpaqueType
 from tierkreis.executor import UvExecutor
 from tierkreis.storage import FileStorage, read_outputs  # type: ignore
 
-from data import RIKEN_WORKERS_DIR, ghz
+from data import RIKEN_WORKERS_DIR, deterministic
 from workers.tkr_reimei.stubs import compile, sqcsub_submit_circuit
 
 Circuit = OpaqueType["pytket._tket.circuit.Circuit"]
@@ -91,7 +91,7 @@ g.outputs()
 if __name__ == "__main__":
     storage = FileStorage(UUID(int=201), do_cleanup=True)
     exec = UvExecutor(RIKEN_WORKERS_DIR, storage.logs_path)
-    run_graph(storage, exec, g, ghz(), polling_interval_seconds=1)
+    run_graph(storage, exec, g, deterministic(), polling_interval_seconds=1)
     output = read_outputs(g, storage)
     print(output)
 ```
