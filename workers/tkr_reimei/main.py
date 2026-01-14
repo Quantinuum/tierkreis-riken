@@ -1,6 +1,5 @@
 from pathlib import Path
 from sys import argv, modules
-from unittest.mock import Mock
 
 from pytket._tket.circuit import Circuit
 from pytket.backends.backendinfo import BackendInfo
@@ -10,6 +9,7 @@ from tierkreis import Worker
 
 from sqcsub_impl import parse_qsubmit_to_dict, run_sqcsub
 from qnexus_impl import qnexus_quantinuum_device_by_name, REIMEI_OPS
+from workers.tkr_reimei.pyqir import mock_pyqir
 
 worker = Worker("tkr_reimei")
 BATCH_FILE = Path("_scr/batches/batch_file.txt")
@@ -23,8 +23,7 @@ def get_backend_info(device_name: str = "reimei") -> BackendInfo:
 
 @worker.task()
 def pass_from_info(backend_info: BackendInfo, optimisation_level: int) -> BasePass:
-    mock = Mock()
-    modules["pyqir"] = mock  # pyqir is not installed on fugaku
+    mock_pyqir()
     from pytket.extensions.quantinuum.backends.quantinuum import QuantinuumBackend
 
     compilation_pass = QuantinuumBackend.pass_from_info(
@@ -35,8 +34,7 @@ def pass_from_info(backend_info: BackendInfo, optimisation_level: int) -> BasePa
 
 @worker.task()
 def compile(circuit: Circuit, optimisation_level: int) -> Circuit:
-    mock = Mock()
-    modules["pyqir"] = mock  # pyqir is not installed on fugaku
+    mock_pyqir()
     from pytket.extensions.quantinuum.backends.quantinuum import QuantinuumBackend
 
     device = qnexus_quantinuum_device_by_name("reimei")
@@ -61,12 +59,7 @@ def compile_offline(
     :return: The compiled circuit.
     :rtype: Circuit
     """
-    mock = Mock()
-    modules["pyqir"] = mock  # pyqir is not installed on fugaku
-    modules["pytket.qir"] = Mock()
-    modules["pytket.qir.conversion"] = Mock()
-    modules["pytket.qir.conversion.api"] = Mock()
-    modules["pytket.qir.conversion.qirgenerator"] = Mock()
+    mock_pyqir()
 
     from pytket.extensions.quantinuum.backends.quantinuum import QuantinuumBackend
 
