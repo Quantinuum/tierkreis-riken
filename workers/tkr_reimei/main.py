@@ -64,6 +64,7 @@ def compile_offline(
     mock = Mock()
     modules["pyqir"] = mock  # pyqir is not installed on fugaku
     modules["pytket.qir"] = Mock()
+    modules["pytket.qir.conversion"] = Mock()
     from pytket.extensions.quantinuum.backends.quantinuum import QuantinuumBackend
 
     compilation_pass = QuantinuumBackend.pass_from_info(
