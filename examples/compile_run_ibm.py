@@ -8,7 +8,7 @@ from tierkreis.executor import UvExecutor
 from tierkreis.storage import FileStorage, read_outputs  # type: ignore
 from pytket.qasm.qasm import circuit_from_qasm
 
-from data import RIKEN_WORKERS_DIR, deterministic
+from data import RIKEN_WORKERS_DIR
 from workers.tkr_ibm_kobe.stubs import get_transpile_info, compile_using_info, submit
 
 Circuit = OpaqueType["pytket._tket.circuit.Circuit"]
@@ -25,6 +25,6 @@ if __name__ == "__main__":
     storage = FileStorage(UUID(int=200), do_cleanup=True)
     env = {"IS_DEV": "True"} if len(argv) > 1 and argv[1] == "dev" else {}
     exec = UvExecutor(RIKEN_WORKERS_DIR, storage.logs_path, env=env)
-    run_graph(storage, exec, g, deterministic(), polling_interval_seconds=1)
+    run_graph(storage, exec, g, circuit, polling_interval_seconds=1)
     output = read_outputs(g, storage)
     print(output)
