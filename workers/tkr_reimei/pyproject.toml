@@ -6,6 +6,7 @@ dependencies = [
     "pytket>=2.10.2",
     "qnexus>=0.35.0",
     "tierkreis",
+    "pytket-quantinuum",
 ]
 
 [dependency-groups]
@@ -17,10 +18,6 @@ dev = [
 [tool.setuptools]
 py-modules = []
 
-[project.optional-dependencies]
-qir = [
-    "pytket-quantinuum",
-]
 
 [tool.uv]
 package=true

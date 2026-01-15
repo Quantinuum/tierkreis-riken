@@ -1,8 +1,0 @@
-[project]
-name = "examples-worker"
-version = "0.1.0"
-requires-python = ">=3.12"
-dependencies = [
-    "pytket>=2.9.3",
-    "tierkreis>=2.0.2",
-]

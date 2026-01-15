@@ -58,6 +58,7 @@ class compile_offline(NamedTuple):
 class sqcsub_submit_circuits(NamedTuple):
     circuits: TKR[list[OpaqueType["pytket._tket.circuit.Circuit"]]]  # noqa: F821 # fmt: skip
     n_shots: TKR[int]  # noqa: F821 # fmt: skip
+    simulate: TKR[bool] | None = None  # noqa: F821 # fmt: skip
 
     @staticmethod
     def out() -> type[TKR[list[dict[str, list[str]]]]]:  # noqa: F821 # fmt: skip
@@ -71,6 +72,7 @@ class sqcsub_submit_circuits(NamedTuple):
 class sqcsub_submit_circuit(NamedTuple):
     circuit: TKR[OpaqueType["pytket._tket.circuit.Circuit"]]  # noqa: F821 # fmt: skip
     n_shots: TKR[int]  # noqa: F821 # fmt: skip
+    simulate: TKR[bool] | None = None  # noqa: F821 # fmt: skip
 
     @staticmethod
     def out() -> type[TKR[dict[str, list[str]]]]:  # noqa: F821 # fmt: skip
@@ -85,6 +87,7 @@ class sqcsub_submit_batched(NamedTuple):
     circuit: TKR[OpaqueType["pytket._tket.circuit.Circuit"]]  # noqa: F821 # fmt: skip
     n_shots: TKR[int]  # noqa: F821 # fmt: skip
     batch_size: TKR[int] | None = None  # noqa: F821 # fmt: skip
+    simulate: TKR[bool] | None = None  # noqa: F821 # fmt: skip
 
     @staticmethod
     def out() -> type[TKR[dict[str, list[str]]]]:  # noqa: F821 # fmt: skip

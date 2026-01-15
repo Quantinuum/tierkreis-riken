@@ -1245,13 +1245,9 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "pytket" },
+    { name = "pytket-quantinuum" },
     { name = "qnexus" },
     { name = "tierkreis" },
-]
-
-[package.optional-dependencies]
-qir = [
-    { name = "pytket-quantinuum" },
 ]
 
 [package.dev-dependencies]
@@ -1264,11 +1260,10 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "pytket", specifier = ">=2.10.2" },
-    { name = "pytket-quantinuum", marker = "extra == 'qir'", git = "https://github.com/CQCL/pytket-quantinuum" },
+    { name = "pytket-quantinuum", git = "https://github.com/CQCL/pytket-quantinuum" },
     { name = "qnexus", specifier = ">=0.35.0" },
     { name = "tierkreis" },
 ]
-provides-extras = ["qir"]
 
 [package.metadata.requires-dev]
 dev = [
