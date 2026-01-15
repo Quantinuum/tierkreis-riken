@@ -29,7 +29,7 @@ def get_info() -> TranspileInfo:
         with NamedTemporaryFile("w+") as props_file:
             cmd: list[str] = [str(script_path), config_file.name, props_file.name]
             logger.info(cmd)
-            subprocess.run(cmd)
+            subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
             config_json = json.load(config_file)
             props_json = json.load(props_file)
