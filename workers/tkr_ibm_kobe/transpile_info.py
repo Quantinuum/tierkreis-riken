@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from pathlib import Path
 import subprocess
@@ -7,6 +8,9 @@ from typing import NamedTuple
 from qiskit_ibm_runtime.models.backend_properties import BackendProperties  # type: ignore
 from qiskit_ibm_runtime.models.backend_configuration import QasmBackendConfiguration  # type: ignore
 from tierkreis.models import portmapping
+
+
+logger = logging.getLogger(__name__)
 
 
 @portmapping
@@ -23,7 +27,9 @@ def get_info() -> TranspileInfo:
 
     with NamedTemporaryFile("w+") as config_file:
         with NamedTemporaryFile("w+") as props_file:
-            subprocess.run([script_path, config_file.name, props_file.name])
+            cmd: list[str] = [str(script_path), config_file.name, props_file.name]
+            logger.info(f"Command: {cmd}")
+            subprocess.run(cmd)
 
             config_json = json.load(config_file)
             props_json = json.load(props_file)
