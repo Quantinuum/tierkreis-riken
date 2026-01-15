@@ -28,15 +28,11 @@ def get_info() -> TranspileInfo:
     with NamedTemporaryFile("w+") as config_file:
         with NamedTemporaryFile("w+") as props_file:
             cmd: list[str] = [str(script_path), config_file.name, props_file.name]
-            logger.info(f"Command: {cmd}")
+            logger.info(cmd)
             subprocess.run(cmd)
 
-            config_raw = config_file.read()
-            logger.info(f"raw config: {config_raw}")
-            config_json = json.loads(config_raw)
-            props_raw = props_file.read()
-            logger.info(f"raw props: {props_raw}")
-            props_json = json.loads(props_raw)
+            config_json = json.load(config_file)
+            props_json = json.load(props_file)
 
             return TranspileInfo(config_json, props_json)
 
