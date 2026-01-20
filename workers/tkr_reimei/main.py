@@ -6,9 +6,11 @@ from pytket.backends.backendinfo import BackendInfo
 from pytket.architecture import FullyConnected
 from pytket.passes import BasePass
 from tierkreis import Worker
+from tierkreis.exceptions import TierkreisError
 
 from sqcsub_impl import parse_qsubmit_to_dict, run_sqcsub
 from qnexus_impl import qnexus_quantinuum_device_by_name, REIMEI_OPS
+from token_impl import QPUS, set_up_tokens as set_up_impl, ensure_token as ensure_impl
 from pyqir import mock_pyqir
 
 worker = Worker("tkr_reimei")
@@ -130,6 +132,19 @@ def sqcsub_submit_batched(
 @worker.task()
 def parse_sqcsub_output(sqcsub_output: bytes) -> dict[str, list[str]]:
     return parse_qsubmit_to_dict(sqcsub_output.decode())
+
+
+@worker.task()
+def set_up_tokens(token_dir: str) -> str:
+    return str(set_up_impl(Path(token_dir)))
+
+
+@worker.task()
+def ensure_token(token_dir: str, device_name: str) -> str:
+    if device_name not in QPUS:
+        msg = f"Invalid device name {device_name}. Must be in {QPUS}."
+        raise TierkreisError(msg)
+    return str(ensure_impl(Path(token_dir), device_name))  # type: ignore (checked)
 
 
 if __name__ == "__main__":

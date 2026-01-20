@@ -108,3 +108,28 @@ class parse_sqcsub_output(NamedTuple):
     @property
     def namespace(self) -> str:
         return "tkr_reimei"
+
+
+class set_up_tokens(NamedTuple):
+    token_dir: TKR[str]  # noqa: F821 # fmt: skip
+
+    @staticmethod
+    def out() -> type[TKR[str]]:  # noqa: F821 # fmt: skip
+        return TKR[str]  # noqa: F821 # fmt: skip
+
+    @property
+    def namespace(self) -> str:
+        return "tkr_reimei"
+
+
+class ensure_token(NamedTuple):
+    token_dir: TKR[str]  # noqa: F821 # fmt: skip
+    device_name: TKR[str]  # noqa: F821 # fmt: skip
+
+    @staticmethod
+    def out() -> type[TKR[str]]:  # noqa: F821 # fmt: skip
+        return TKR[str]  # noqa: F821 # fmt: skip
+
+    @property
+    def namespace(self) -> str:
+        return "tkr_reimei"
