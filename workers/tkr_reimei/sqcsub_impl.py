@@ -1,20 +1,24 @@
 import ast
 from collections import defaultdict
+import json
+import logging
 import re
 import subprocess
 from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
 from pytket._tket.circuit import Circuit
 from pytket._tket.unit_id import Bit
 from pytket.backends.backendresult import BackendResult
 from pytket.utils.outcomearray import OutcomeArray
+from pytket.qasm.qasm import circuit_to_qasm
+
+logger = logging.getLogger(__name__)
 
 
-def run_sqcsub(
-    circuit: Circuit,
-    n_shots: int,
-) -> str:
+def run_sqcsub(circuit: Circuit, n_shots: int, simulate: bool) -> str:
+    device_name = "reimei-simulator" if simulate else "reimei"
     # Scratch directory.
     name = f"{uuid4()}"
     dname = Path().home() / "_scr" / name
@@ -24,9 +28,13 @@ def run_sqcsub(
     result_file = dname / "result.txt"
     log_file = dname / "result.out"
     n_qubits = circuit.n_qubits
+
+    # Write input circuit to file
+    circuit_to_qasm(circuit, str(in_file), header="hqslib1")
+
     # Generate a command
     args = [
-        "source /vol0300/share/ra010014/jhpcq/x86/scripts/setenv-sqcsub.sh reimei",
+        f"source /vol0300/share/ra010014/jhpcq/x86/scripts/setenv-sqcsub.sh {device_name}",
         "&&",
         "sqcsub",
     ]
@@ -36,17 +44,22 @@ def run_sqcsub(
     args.extend(["--iformat", "qasm"])
     args.extend(["--ofile", str(result_file)])
     args.extend(["--oformat", "raw"])
-    args.extend(["--qpu", "reimei"])
+    args.extend(["--qpu", device_name])
 
     cmd = " ".join(args)
     with open(log_file, "w") as fh:
         print(cmd, file=fh)
-        subprocess.check_call(
-            cmd,
-            shell=True,
-            stderr=fh,
-            stdout=fh,
-        )
+        try:
+            subprocess.check_call(
+                cmd,
+                shell=True,
+                stderr=fh,
+                stdout=fh,
+            )
+        except subprocess.CalledProcessError as e:
+            with open(log_file) as fh:
+                logger.error(fh.read())
+            raise e
 
     return str(result_file)
 

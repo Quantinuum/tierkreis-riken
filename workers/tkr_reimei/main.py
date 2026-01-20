@@ -1,6 +1,5 @@
 from pathlib import Path
-from sys import argv, modules
-from unittest.mock import Mock
+from sys import argv
 
 from pytket._tket.circuit import Circuit
 from pytket.backends.backendinfo import BackendInfo
@@ -10,6 +9,7 @@ from tierkreis import Worker
 
 from sqcsub_impl import parse_qsubmit_to_dict, run_sqcsub
 from qnexus_impl import qnexus_quantinuum_device_by_name, REIMEI_OPS
+from pyqir import mock_pyqir
 
 worker = Worker("tkr_reimei")
 BATCH_FILE = Path("_scr/batches/batch_file.txt")
@@ -23,8 +23,7 @@ def get_backend_info(device_name: str = "reimei") -> BackendInfo:
 
 @worker.task()
 def pass_from_info(backend_info: BackendInfo, optimisation_level: int) -> BasePass:
-    mock = Mock()
-    modules["pyqir"] = mock  # pyqir is not installed on fugaku
+    mock_pyqir()
     from pytket.extensions.quantinuum.backends.quantinuum import QuantinuumBackend
 
     compilation_pass = QuantinuumBackend.pass_from_info(
@@ -35,8 +34,7 @@ def pass_from_info(backend_info: BackendInfo, optimisation_level: int) -> BasePa
 
 @worker.task()
 def compile(circuit: Circuit, optimisation_level: int) -> Circuit:
-    mock = Mock()
-    modules["pyqir"] = mock  # pyqir is not installed on fugaku
+    mock_pyqir()
     from pytket.extensions.quantinuum.backends.quantinuum import QuantinuumBackend
 
     device = qnexus_quantinuum_device_by_name("reimei")
@@ -61,8 +59,8 @@ def compile_offline(
     :return: The compiled circuit.
     :rtype: Circuit
     """
-    mock = Mock()
-    modules["pyqir"] = mock  # pyqir is not installed on fugaku
+    mock_pyqir()
+
     from pytket.extensions.quantinuum.backends.quantinuum import QuantinuumBackend
 
     compilation_pass = QuantinuumBackend.pass_from_info(
@@ -81,11 +79,11 @@ def compile_offline(
 
 @worker.task()
 def sqcsub_submit_circuits(
-    circuits: list[Circuit], n_shots: int
+    circuits: list[Circuit], n_shots: int, simulate: bool = False
 ) -> list[dict[str, list[str]]]:
     results = []
     for circuit in circuits:
-        result_file = run_sqcsub(circuit, n_shots)
+        result_file = run_sqcsub(circuit, n_shots, simulate)
         with open(result_file, "r") as f:
             result = parse_qsubmit_to_dict(f.read())
         results.append(result)
@@ -93,8 +91,10 @@ def sqcsub_submit_circuits(
 
 
 @worker.task()
-def sqcsub_submit_circuit(circuit: Circuit, n_shots: int) -> dict[str, list[str]]:
-    result_file = run_sqcsub(circuit, n_shots)
+def sqcsub_submit_circuit(
+    circuit: Circuit, n_shots: int, simulate: bool = False
+) -> dict[str, list[str]]:
+    result_file = run_sqcsub(circuit, n_shots, simulate)
     with open(result_file, "r") as f:
         result = parse_qsubmit_to_dict(f.read())
     return result
@@ -102,7 +102,7 @@ def sqcsub_submit_circuit(circuit: Circuit, n_shots: int) -> dict[str, list[str]
 
 @worker.task()
 def sqcsub_submit_batched(
-    circuit: Circuit, n_shots: int, batch_size: int = 100
+    circuit: Circuit, n_shots: int, batch_size: int = 100, simulate: bool = False
 ) -> dict[str, list[str]]:
     if not BATCH_FILE.exists():
         BATCH_FILE.parent.mkdir(parents=True, exist_ok=True)
@@ -113,7 +113,7 @@ def sqcsub_submit_batched(
         with open(BATCH_FILE, "r") as fh:
             start = int(fh.readline())  # First line is the number of shots
     for batch in range(start, n_shots, batch_size):
-        result_file = run_sqcsub(circuit, batch_size)
+        result_file = run_sqcsub(circuit, batch_size, simulate)
         with open(BATCH_FILE, "r") as fh:
             lines = fh.readlines()
         lines[0] = f"{batch + batch_size}\n"

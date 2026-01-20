@@ -5,5 +5,4 @@ docs:
 stubs:
 	cd scripts && uv run generate_stubs.py
 	cd workers/tkr_ibm_kobe && uv run main.py --stubs-path stubs.py
-	cd workers/examples_worker && uv run main.py --stubs-path stubs.py
 	cd workers/tkr_reimei && uv run main.py --stubs-path stubs.py
