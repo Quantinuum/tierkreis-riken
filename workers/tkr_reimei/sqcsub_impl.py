@@ -1,11 +1,9 @@
 import ast
 from collections import defaultdict
-import json
 import logging
 import re
 import subprocess
 from pathlib import Path
-from typing import Any
 from uuid import uuid4
 
 from pytket._tket.circuit import Circuit
