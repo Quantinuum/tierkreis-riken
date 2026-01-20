@@ -76,9 +76,10 @@ def set_up_tokens(token_dir: Path) -> Path:
     for qpu in QPUS:
         qpu_dir = token_dir / qpu
         logger.info("Setting up %s in %s", qpu, token_dir)
+        if qpu_dir.exists():
+            shutil.rmtree(qpu_dir)
         qpu_dir.mkdir(exist_ok=True)
-        for file in qpu_dir.iterdir():
-            file.unlink()
+
         logger.info("Calling the shell script for %s", qpu)
         process = subprocess.run([INSTALL_CMD, qpu])
         try:
@@ -88,7 +89,7 @@ def set_up_tokens(token_dir: Path) -> Path:
             raise TierkreisError() from e
         _get_token(user_name, password, qpu_dir / "jwt.token")
 
-        shutil.copytree(SQC_DIR, qpu_dir)
+        shutil.copytree(SQC_DIR, qpu_dir, dirs_exist_ok=True)
     return token_dir
 
 
@@ -96,6 +97,7 @@ def ensure_token(
     token_dir: Path,
     qpu: Literal["reimei", "reimei-simulator", "ibm-kobe-dacc"] = "reimei",
 ) -> Path:
+    logger.info("Making sure the correct token exists.")
     if not token_dir.exists():
         logger.info("Token directory %s empty, setting up...", token_dir)
         _ = set_up_tokens(token_dir)
@@ -108,13 +110,10 @@ def ensure_token(
         raise TierkreisError(msg)
     # Set up sqc dir
     if SQC_DIR.exists():
-        for file in SQC_DIR.iterdir():
-            file.unlink()
-    else:
-        SQC_DIR.mkdir(parents=True)
+        shutil.rmtree(SQC_DIR)
     # copy the correct file
-
-    shutil.copytree(qpu_dir, SQC_DIR)
+    logger.info("Copying %s -> %s", qpu_dir, token_dir)
+    shutil.copytree(qpu_dir, SQC_DIR, dirs_exist_ok=True)
     return SQC_DIR
 
 
@@ -125,6 +124,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    # For testing only
     logging.basicConfig(level=logging.INFO)
     logger.setLevel(logging.INFO)
     main()
