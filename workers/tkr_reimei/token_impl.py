@@ -19,7 +19,7 @@ JWT_PASSWORD_KEY = "JWT_PASSWORD"
 HEADERS = {"Content-Type": "application/json"}
 QPUS = ["reimei", "reimei-simulator", "ibm-kobe-dacc"]
 SQC_DIR = Path.home() / ".sqc_rpc_sched"
-INSTALL_CMD = "vol0300/share/ra010014/jhpcq/x86/scripts/install-cert-files.sh"
+INSTALL_CMD = "/vol0300/share/ra010014/jhpcq/x86/scripts/install-cert-files.sh"
 
 
 def _is_valid_email(email: str) -> bool:
@@ -87,8 +87,8 @@ def set_up_tokens(token_dir: Path) -> Path:
             msg = f"Error when running {INSTALL_CMD} {qpu}"
             raise TierkreisError() from e
         _get_token(user_name, password, qpu_dir / "jwt.token")
-        for file in SQC_DIR.iterdir():
-            shutil.copy(file, qpu_dir)
+
+        shutil.copytree(SQC_DIR, qpu_dir)
     return token_dir
 
 
@@ -113,8 +113,8 @@ def ensure_token(
     else:
         SQC_DIR.mkdir(parents=True)
     # copy the correct file
-    for file in qpu_dir.iterdir():
-        shutil.copy(file, SQC_DIR)
+
+    shutil.copytree(qpu_dir, SQC_DIR)
     return SQC_DIR
 
 
@@ -125,4 +125,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    logger.setLevel(logging.INFO)
     main()
