@@ -49,7 +49,10 @@ def _get_token(
         if result.get("success"):
             token = result.get("access_token")
             if token:
-                with open(output_file, "w", encoding="utf-8") as f:
+                # make sure file info is upto date
+                if output_file.exists():
+                    output_file.unlink()
+                with open(output_file, "w+", encoding="utf-8") as f:
                     f.write(token)
                 logger.info("Access token saved to '%s'", output_file)
             else:
@@ -87,9 +90,9 @@ def set_up_tokens(token_dir: Path) -> Path:
         except subprocess.CalledProcessError as e:
             msg = f"Error when running {INSTALL_CMD} {qpu}"
             raise TierkreisError() from e
+        shutil.copytree(SQC_DIR, qpu_dir, dirs_exist_ok=True)
         _get_token(user_name, password, qpu_dir / "jwt.token")
 
-        shutil.copytree(SQC_DIR, qpu_dir, dirs_exist_ok=True)
     return token_dir
 
 
