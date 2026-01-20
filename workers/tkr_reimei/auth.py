@@ -1,7 +1,8 @@
+import logging
 from pathlib import Path
 from shutil import copy
 
-
+logger = logging.getLogger(__name__)
 TOKEN_USED_BY_SQCSUB = Path.home() / ".sqc_rpc_sched" / "jwt.token"
 
 
@@ -12,5 +13,6 @@ def cached_token(simulate: bool):
 
 def overwrite_auth_token(simulate: bool):
     cache_path = cached_token(simulate)
+    logger.info(f"Overwriting auth token {cache_path} {TOKEN_USED_BY_SQCSUB}")
     if cache_path.exists() and cache_path.is_file():
         copy(cache_path, TOKEN_USED_BY_SQCSUB)
