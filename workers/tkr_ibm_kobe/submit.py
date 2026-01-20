@@ -10,8 +10,12 @@ from pytket.extensions.qiskit.qiskit_convert import tk_to_qiskit
 from qiskit import qasm3  # type: ignore
 from qiskit.primitives.containers import BitArray  # type: ignore
 
+from auth import overwrite_auth_token
+
 
 def submit_circuit(circuit: Circuit, n_shots: int) -> bytes:
+    overwrite_auth_token()
+
     script_file = "submit_local.sh" if os.environ.get("IS_DEV") else "submit.sh"
     script_path = Path(__file__).parent / "scripts" / script_file
 

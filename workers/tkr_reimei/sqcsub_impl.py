@@ -1,11 +1,9 @@
 import ast
 from collections import defaultdict
-import json
 import logging
 import re
 import subprocess
 from pathlib import Path
-from typing import Any
 from uuid import uuid4
 
 from pytket._tket.circuit import Circuit
@@ -14,10 +12,13 @@ from pytket.backends.backendresult import BackendResult
 from pytket.utils.outcomearray import OutcomeArray
 from pytket.qasm.qasm import circuit_to_qasm
 
+from auth import overwrite_auth_token
+
 logger = logging.getLogger(__name__)
 
 
 def run_sqcsub(circuit: Circuit, n_shots: int, simulate: bool) -> str:
+    overwrite_auth_token(simulate)
     device_name = "reimei-simulator" if simulate else "reimei"
     # Scratch directory.
     name = f"{uuid4()}"
@@ -76,7 +77,8 @@ def parse_qsubmit(input_str: str) -> BackendResult:
 
 
 def _parse_block(block: str) -> tuple[list[int], tuple[Bit, ...]]:
-    bit_register, bits = [], []
+    bit_register: list[Bit] = []
+    bits: list[int] = []
     for line in block.splitlines():
         regname, bits_str = map(str.strip, line.split(":", 1))
         bits += [int(i) for i in ast.literal_eval(bits_str)][::-1]

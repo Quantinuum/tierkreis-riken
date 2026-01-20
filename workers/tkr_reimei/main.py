@@ -81,7 +81,7 @@ def compile_offline(
 def sqcsub_submit_circuits(
     circuits: list[Circuit], n_shots: int, simulate: bool = False
 ) -> list[dict[str, list[str]]]:
-    results = []
+    results: list[dict[str, list[str]]] = []
     for circuit in circuits:
         result_file = run_sqcsub(circuit, n_shots, simulate)
         with open(result_file, "r") as f:

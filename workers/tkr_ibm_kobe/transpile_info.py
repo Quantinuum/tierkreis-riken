@@ -9,6 +9,8 @@ from qiskit_ibm_runtime.models.backend_properties import BackendProperties  # ty
 from qiskit_ibm_runtime.models.backend_configuration import QasmBackendConfiguration  # type: ignore
 from tierkreis.models import portmapping
 
+from auth import overwrite_auth_token
+
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +22,7 @@ class TranspileInfo(NamedTuple):
 
 
 def get_info() -> TranspileInfo:
+    overwrite_auth_token()
     script_file = (
         "transpile_info_local.sh" if os.environ.get("IS_DEV") else "transpile_info.sh"
     )
