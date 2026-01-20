@@ -2,12 +2,12 @@ from pathlib import Path
 from shutil import copy
 
 
-TOKEN_USED_BY_SQCSUB = Path.home() / "sqc_rpc_sched" / "jwt.token"
+TOKEN_USED_BY_SQCSUB = Path.home() / ".sqc_rpc_sched" / "jwt.token"
 
 
 def cached_token(simulate: bool):
     device_name: str = "reimei-simulator" if simulate else "reimei"
-    return Path.home() / "sqc_rpc_sched" / f"jwt-{device_name}.token"
+    return Path.home() / ".sqc_rpc_sched" / f"jwt-{device_name}.token"
 
 
 def overwrite_auth_token(simulate: bool):
