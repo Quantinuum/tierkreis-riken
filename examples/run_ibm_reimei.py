@@ -12,8 +12,6 @@ from pytket.qasm.qasm import circuit_from_qasm
 from data import RIKEN_WORKERS_DIR
 from workers.tkr_ibm_kobe.stubs import get_transpile_info, compile_using_info, submit
 from workers.tkr_reimei.stubs import (
-    set_up_tokens,
-    ensure_token,
     compile_offline,
     sqcsub_submit_circuit as submit_reimei,
 )
@@ -24,12 +22,12 @@ BackendResult = OpaqueType["pytket.backends.backendresult.BackendResult"]
 
 class Input(NamedTuple):
     circuit: TKR[Circuit]
-    token_dir: TKR[str]
+    order: TKR[str]
 
 
 class Output(NamedTuple):
     result: TKR[dict[str, list[str]]]
-    token_dir: TKR[str]
+    order: TKR[str]
 
 
 def ibm_graph() -> GraphBuilder[Input, Output]:
@@ -39,7 +37,7 @@ def ibm_graph() -> GraphBuilder[Input, Output]:
         compile_using_info(info.config, info.props, g.inputs.circuit)
     )
     res = g.task(submit(compiled_circuit, g.const(10)))
-    g.outputs(Output(res, g.inputs.token_dir))
+    g.outputs(Output(res, g.inputs.order))
     return g
 
 
@@ -49,7 +47,7 @@ def reimei_simulator_graph() -> GraphBuilder[Input, Output]:
     res = g.task(
         submit_reimei(compiled_circuit, g.const(10), g.const(True))
     )  # simulate=TRUE
-    g.outputs(Output(res, g.inputs.token_dir))
+    g.outputs(Output(res, g.inputs.order))
     return g
 
 
@@ -60,12 +58,8 @@ class FullOutput(NamedTuple):
 
 def full_graph() -> GraphBuilder[TKR[Circuit], FullOutput]:
     g = GraphBuilder(TKR[Circuit], FullOutput)
-    token_dir = g.const(str(Path.home() / ".tkr_tokens"))
-    token_dir = g.task(set_up_tokens(token_dir))
-    token_dir = g.task(ensure_token(token_dir, g.const("ibm-kobe-dacc")))
-    output_ibm = g.eval(ibm_graph(), Input(g.inputs, token_dir))
-    token_dir = g.task(ensure_token(output_ibm.token_dir, g.const("reimei-simulator")))
-    output_reimei = g.eval(reimei_simulator_graph(), Input(g.inputs, token_dir))
+    output_ibm = g.eval(ibm_graph(), Input(g.inputs, g.const("")))
+    output_reimei = g.eval(reimei_simulator_graph(), Input(g.inputs, output_ibm.order))
     g.outputs(FullOutput(output_ibm.result, output_reimei.result))
     return g
 
