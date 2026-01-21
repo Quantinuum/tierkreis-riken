@@ -10,11 +10,17 @@ from tierkreis.exceptions import TierkreisError
 
 from sqcsub_impl import parse_qsubmit_to_dict, run_sqcsub
 from qnexus_impl import qnexus_quantinuum_device_by_name, REIMEI_OPS
-from token_impl import QPUS, set_up_tokens as set_up_impl, ensure_token as ensure_impl
+from token_impl import (
+    QPUS,
+    set_up_tokens as set_up_impl,
+    ensure_token as ensure_impl,
+    set_up_token,
+)
 from pyqir import mock_pyqir
 
 worker = Worker("tkr_reimei")
 BATCH_FILE = Path("_scr/batches/batch_file.txt")
+TOKEN_DIR = Path.home() / ".tkr_tokens"
 
 
 @worker.task()
@@ -84,6 +90,7 @@ def sqcsub_submit_circuits(
     circuits: list[Circuit], n_shots: int, simulate: bool = False
 ) -> list[dict[str, list[str]]]:
     results = []
+    _ = set_up_token(TOKEN_DIR, "reimei-simulator" if simulate else "reimei")
     for circuit in circuits:
         result_file = run_sqcsub(circuit, n_shots, simulate)
         with open(result_file, "r") as f:
@@ -96,6 +103,7 @@ def sqcsub_submit_circuits(
 def sqcsub_submit_circuit(
     circuit: Circuit, n_shots: int, simulate: bool = False
 ) -> dict[str, list[str]]:
+    _ = set_up_token(TOKEN_DIR, "reimei-simulator" if simulate else "reimei")
     result_file = run_sqcsub(circuit, n_shots, simulate)
     with open(result_file, "r") as f:
         result = parse_qsubmit_to_dict(f.read())
@@ -106,6 +114,7 @@ def sqcsub_submit_circuit(
 def sqcsub_submit_batched(
     circuit: Circuit, n_shots: int, batch_size: int = 100, simulate: bool = False
 ) -> dict[str, list[str]]:
+    _ = set_up_token(TOKEN_DIR, "reimei-simulator" if simulate else "reimei")
     if not BATCH_FILE.exists():
         BATCH_FILE.parent.mkdir(parents=True, exist_ok=True)
         with open(BATCH_FILE, "w+") as fh:
@@ -136,7 +145,7 @@ def parse_sqcsub_output(sqcsub_output: bytes) -> dict[str, list[str]]:
 
 @worker.task()
 def set_up_tokens(token_dir: str) -> str:
-    return str(set_up_impl(Path(token_dir)))
+    return str(set_up_impl(Path(token_dir), QPUS))
 
 
 @worker.task()
