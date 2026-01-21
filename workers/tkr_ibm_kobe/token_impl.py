@@ -1,4 +1,4 @@
-# THIS IS A COPY OF tkr_ibm_kobe/token_impl.py make sure to always change both
+# THIS IS A COPY OF tkr_reimei/token_impl.py make sure to always change both
 from os import getenv
 from pathlib import Path
 import shutil
