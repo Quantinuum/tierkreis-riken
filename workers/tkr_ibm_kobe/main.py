@@ -19,6 +19,7 @@ TOKEN_DIR = Path.home() / ".tkr_tokens"
 
 @worker.task()
 def get_transpile_info() -> TranspileInfo:
+    _ = set_up_token(TOKEN_DIR, "ibm-kobe-dacc")
     return get_info()
 
 
