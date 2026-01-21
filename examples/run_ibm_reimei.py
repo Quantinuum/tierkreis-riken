@@ -60,7 +60,7 @@ def full_graph() -> GraphBuilder[TKR[Circuit], FullOutput]:
     g = GraphBuilder(TKR[Circuit], FullOutput)
     output_ibm = g.eval(ibm_graph(), Input(g.inputs, g.const("")))
     output_reimei = g.eval(reimei_simulator_graph(), Input(g.inputs, output_ibm.order))
-    g.outputs(FullOutput(output_ibm.result, output_reimei.result))
+    g.outputs(FullOutput(output_reimei.result, output_ibm.result))
     return g
 
 
