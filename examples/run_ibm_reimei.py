@@ -65,7 +65,7 @@ def full_graph() -> GraphBuilder[TKR[Circuit], FullOutput]:
     token_dir = g.task(ensure_token(token_dir, g.const("ibm-kobe-dacc")))
     output_ibm = g.eval(ibm_graph(), Input(g.inputs, token_dir))
     token_dir = g.task(ensure_token(output_ibm.token_dir, g.const("reimei-simulator")))
-    output_reimei = g.eval(ibm_graph(), Input(g.inputs, token_dir))
+    output_reimei = g.eval(reimei_simulator_graph(), Input(g.inputs, token_dir))
     g.outputs(FullOutput(output_ibm.result, output_reimei.result))
     return g
 
