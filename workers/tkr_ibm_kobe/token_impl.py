@@ -4,7 +4,6 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
-from typing import Literal
 import requests
 import json
 import re
@@ -82,7 +81,10 @@ def set_up_token(token_dir: Path, qpu: str) -> Path:
         if file_age < 86400:  # 24 hours in seconds
             logger.info("Token is fresh, skipping setup")
             if SQC_DIR.exists():
-                shutil.rmtree(SQC_DIR)
+                if SQC_DIR.is_symlink():
+                    os.unlink(SQC_DIR)
+                else:
+                    shutil.rmtree(SQC_DIR)
             os.symlink(qpu_dir, SQC_DIR, target_is_directory=True)
             return token_dir
     user_name = getenv(JWT_MAIL_KEY, None)
@@ -96,7 +98,10 @@ def set_up_token(token_dir: Path, qpu: str) -> Path:
         shutil.rmtree(qpu_dir)
     qpu_dir.mkdir(exist_ok=True)
     if SQC_DIR.exists():
-        shutil.rmtree(SQC_DIR)
+        if SQC_DIR.is_symlink():
+            os.unlink(SQC_DIR)
+        else:
+            shutil.rmtree(SQC_DIR)
         SQC_DIR.mkdir(exist_ok=True)
     logger.info("Calling the shell script for %s", qpu)
     process = subprocess.run([INSTALL_CMD, qpu])
@@ -109,68 +114,3 @@ def set_up_token(token_dir: Path, qpu: str) -> Path:
     _get_token(user_name, password, qpu_dir / JWT_TOKEN_NAME)
 
     return token_dir
-
-
-def set_up_tokens(token_dir: Path, qpus: list[str]) -> Path:
-    logger.info("Setting up tokens in %s", token_dir)
-    token_dir.mkdir(parents=True, exist_ok=True)
-    user_name = getenv(JWT_MAIL_KEY, None)
-    password = getenv(JWT_PASSWORD_KEY, None)
-    if user_name is None or password is None:
-        msg = f"Cannot get JWT token. Make sure ${JWT_MAIL_KEY} and ${JWT_PASSWORD_KEY} are set"
-        raise TierkreisError(msg)
-    for qpu in qpus:
-        qpu_dir = token_dir / qpu
-        logger.info("Setting up %s in %s", qpu, token_dir)
-        if qpu_dir.exists():
-            shutil.rmtree(qpu_dir)
-        qpu_dir.mkdir(exist_ok=True)
-
-        logger.info("Calling the shell script for %s", qpu)
-        process = subprocess.run([INSTALL_CMD, qpu])
-        try:
-            process.check_returncode()
-        except subprocess.CalledProcessError as e:
-            msg = f"Error when running {INSTALL_CMD} {qpu}"
-            raise TierkreisError() from e
-        shutil.copytree(SQC_DIR, qpu_dir, dirs_exist_ok=True)
-        _get_token(user_name, password, qpu_dir / JWT_TOKEN_NAME)
-
-    return token_dir
-
-
-def ensure_token(
-    token_dir: Path,
-    qpu: Literal["reimei", "reimei-simulator", "ibm-kobe-dacc"] = "reimei",
-) -> Path:
-    logger.info("Making sure the correct token exists.")
-    if not token_dir.exists():
-        logger.info("Token directory %s empty, setting up...", token_dir)
-        _ = set_up_tokens(token_dir, [qpu])
-    qpu_dir = token_dir / qpu
-    if not qpu_dir.exists():
-        msg = (
-            f"Directory {qpu_dir} does not exist after setup."
-            "Make sure your credentials are correct."
-        )
-        raise TierkreisError(msg)
-    # Set up sqc dir
-    if SQC_DIR.exists():
-        shutil.rmtree(SQC_DIR)
-    # copy the correct file
-    logger.info("Copying %s -> %s", qpu_dir, token_dir)
-    shutil.copytree(qpu_dir, SQC_DIR, dirs_exist_ok=True)
-    return token_dir
-
-
-def main() -> None:
-    token_dir = Path.home() / ".tkr_tokens"
-    _ = set_up_tokens(token_dir, QPUS)
-    _ = ensure_token(token_dir, "reimei-simulator")
-
-
-if __name__ == "__main__":
-    # For testing only
-    logging.basicConfig(level=logging.INFO)
-    logger.setLevel(logging.INFO)
-    main()
