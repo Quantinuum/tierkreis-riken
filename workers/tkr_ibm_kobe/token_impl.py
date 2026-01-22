@@ -1,5 +1,6 @@
 # THIS IS A COPY OF tkr_reimei/token_impl.py make sure to always change both
 from os import getenv
+import os
 from pathlib import Path
 import shutil
 import subprocess
@@ -80,7 +81,9 @@ def set_up_token(token_dir: Path, qpu: str) -> Path:
         file_age = time.time() - (qpu_dir / JWT_TOKEN_NAME).stat().st_mtime
         if file_age < 86400:  # 24 hours in seconds
             logger.info("Token is fresh, skipping setup")
-            shutil.copytree(qpu_dir, SQC_DIR, dirs_exist_ok=True)
+            if SQC_DIR.exists():
+                shutil.rmtree(SQC_DIR)
+            os.symlink(qpu_dir, SQC_DIR, target_is_directory=True)
             return token_dir
     user_name = getenv(JWT_MAIL_KEY, None)
     password = getenv(JWT_PASSWORD_KEY, None)
@@ -92,7 +95,9 @@ def set_up_token(token_dir: Path, qpu: str) -> Path:
     if qpu_dir.exists():
         shutil.rmtree(qpu_dir)
     qpu_dir.mkdir(exist_ok=True)
-
+    if SQC_DIR.exists():
+        shutil.rmtree(SQC_DIR)
+        SQC_DIR.mkdir(exist_ok=True)
     logger.info("Calling the shell script for %s", qpu)
     process = subprocess.run([INSTALL_CMD, qpu])
     try:
