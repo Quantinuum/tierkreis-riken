@@ -96,21 +96,21 @@ def set_up_token(token_dir: Path, qpu: str) -> Path:
     logger.info("Setting up %s in %s", qpu, token_dir)
     if qpu_dir.exists():
         shutil.rmtree(qpu_dir)
-    qpu_dir.mkdir(exist_ok=True)
+    qpu_dir.mkdir(parents=True)
     if SQC_DIR.exists():
         if SQC_DIR.is_symlink():
             os.unlink(SQC_DIR)
         else:
             shutil.rmtree(SQC_DIR)
-        SQC_DIR.mkdir(exist_ok=True)
+        SQC_DIR.mkdir(parents=True)
     logger.info("Calling the shell script for %s", qpu)
     process = subprocess.run([INSTALL_CMD, qpu])
     try:
         process.check_returncode()
     except subprocess.CalledProcessError as e:
         msg = f"Error when running {INSTALL_CMD} {qpu}"
-        raise TierkreisError() from e
+        raise TierkreisError(msg) from e
+    _get_token(user_name, password, SQC_DIR / JWT_TOKEN_NAME)
     shutil.copytree(SQC_DIR, qpu_dir, dirs_exist_ok=True)
-    _get_token(user_name, password, qpu_dir / JWT_TOKEN_NAME)
 
     return token_dir
