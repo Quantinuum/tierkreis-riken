@@ -1,4 +1,5 @@
 from sys import argv
+from pathlib import Path
 from pytket._tket.circuit import Circuit
 from pytket.extensions.qiskit.backends.ibm import IBMQBackend
 
@@ -9,13 +10,16 @@ from tierkreis import Worker
 
 from submit import parse_results, submit_circuit
 from transpile_info import TranspileInfo, get_info
+from token_impl import set_up_token
 
 
 worker = Worker("tkr_ibm_kobe")
+TOKEN_DIR = Path.home() / ".tkr_tokens"
 
 
 @worker.task()
 def get_transpile_info() -> TranspileInfo:
+    _ = set_up_token(TOKEN_DIR, "ibm-kobe-dacc")
     return get_info()
 
 
@@ -32,9 +36,10 @@ def compile_using_info(
 def submit(circuit: Circuit, n_shots: int) -> dict[str, list[str]]:
     """Run the given circuit with the specified number of shots on IBM Kobe.
 
-    The keys of the returned dictionary are the classical reigster names.
+    The keys of the returned dictionary are the classical register names.
     The values of the returned dictionary are lists of shots.
     Each shot is a string of 0s and 1s with the lower bits appearing first."""
+    _ = set_up_token(TOKEN_DIR, "ibm-kobe-dacc")
     res = submit_circuit(circuit, n_shots)
     return parse_results(res)
 
