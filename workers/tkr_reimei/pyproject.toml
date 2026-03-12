@@ -1,7 +1,7 @@
 [project]
 name = "tkr-reimei"
 version = "0.1.0"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.13"
 dependencies = [
     "pytket>=2.10.2",
     "qnexus>=0.35.0",
